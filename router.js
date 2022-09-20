@@ -32,7 +32,11 @@ export const useRoute = (isAuth) => {
     );
   }
   return (
-    <MainTab.Navigator labeled={false}>
+    <MainTab.Navigator
+      labeled={false}
+      barStyle={{ backgroundColor: '#fff', height: 83 }}
+      initialRouteName="Create"
+    >
       <MainTab.Screen
         options={{
           tabBarIcon: ({ focused, size, color }) => (

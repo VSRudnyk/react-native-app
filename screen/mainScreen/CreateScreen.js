@@ -34,19 +34,21 @@ export const CreateScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       {isFocused && (
-        <Camera style={styles.camera} ref={(ref) => setCamera(ref)}>
-          {photo && (
-            <View style={styles.takePhotoContainer}>
-              <Image
-                source={{ uri: photo }}
-                style={{ height: 200, width: 200, borderRadius: 10 }}
-              />
-            </View>
-          )}
-          <TouchableOpacity onPress={takePhoto} style={styles.button}>
-            <Text style={styles.snapText}>Snap</Text>
-          </TouchableOpacity>
-        </Camera>
+        <View style={styles.cameraWrapper}>
+          <Camera style={styles.camera} ref={(ref) => setCamera(ref)}>
+            {photo && (
+              <View style={styles.takePhotoContainer}>
+                <Image
+                  source={{ uri: photo }}
+                  style={{ height: 200, width: 200, borderRadius: 10 }}
+                />
+              </View>
+            )}
+            <TouchableOpacity onPress={takePhoto} style={styles.button}>
+              <Text style={styles.snapText}>Snap</Text>
+            </TouchableOpacity>
+          </Camera>
+        </View>
       )}
       <TouchableOpacity onPress={sendPhoto} style={styles.sendBtn}>
         <Text style={styles.sendText}>Send</Text>
@@ -59,11 +61,17 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  camera: {
+  cameraWrapper: {
     height: '70%',
+    marginHorizontal: 10,
     marginTop: 40,
-    alignItems: 'center',
+    borderRadius: 10,
+    overflow: 'hidden',
+  },
+  camera: {
+    height: '100%',
     justifyContent: 'flex-end',
+    alignItems: 'center',
   },
   button: {
     borderRadius: 50,
