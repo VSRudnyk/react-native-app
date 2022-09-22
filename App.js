@@ -9,7 +9,7 @@ import { Provider } from 'react-redux';
 import { store } from './redux/store';
 
 export default function App() {
-  const routing = useRoute({});
+  const routing = useRoute(false);
   const [fontsLoaded] = useFonts({
     'Roboto-Medium': require('./assets/fonts/Roboto-Medium.ttf'),
     'Roboto-Bold': require('./assets/fonts/Roboto-Bold.ttf'),

@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-
+import { useState, useEffect } from 'react';
 import {
   StyleSheet,
   Text,
@@ -13,6 +12,8 @@ import {
   Dimensions,
   Button,
 } from 'react-native';
+// import { authSignUpUser } from '../../redux/auth/authOperations';
+import { useDispatch } from 'react-redux';
 
 const initialState = {
   login: '',
@@ -21,6 +22,8 @@ const initialState = {
 };
 
 export default function RegistrationScreen({ navigation }) {
+  const dispatch = useDispatch();
+
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [state, setState] = useState(initialState);
   const [dimensions, setdimensions] = useState(
@@ -43,6 +46,7 @@ export default function RegistrationScreen({ navigation }) {
 
   const handleSubmit = () => {
     Keyboard.dismiss();
+    dispatch(authSignUpUser(state));
     setState(initialState);
   };
 
