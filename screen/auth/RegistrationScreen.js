@@ -10,10 +10,9 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   Dimensions,
-  Button,
 } from 'react-native';
 // import { authSignUpUser } from '../../redux/auth/authOperations';
-import { useDispatch } from 'react-redux';
+// import { useDispatch } from 'react-redux';
 
 const initialState = {
   login: '',
@@ -95,16 +94,20 @@ export default function RegistrationScreen({ navigation }) {
                   }
                 />
                 <TouchableOpacity
-                  style={styles.btn}
+                  style={styles.registerBtn}
                   activeOpacity={0.8}
                   onPress={handleSubmit}
                 >
-                  <Text style={styles.btnText}>Зарегистрироваться</Text>
+                  <Text style={styles.registerBtnText}>Зарегистрироваться</Text>
                 </TouchableOpacity>
-                <Button
+                <TouchableOpacity
+                  style={styles.loginBtn}
                   onPress={() => navigation.navigate('Login')}
-                  title="Уже есть аккаунт? Войти"
-                />
+                >
+                  <Text style={styles.loginBtnText}>
+                    Уже есть аккаунт? Войти
+                  </Text>
+                </TouchableOpacity>
               </View>
             </View>
           </KeyboardAvoidingView>
@@ -147,7 +150,7 @@ const styles = StyleSheet.create({
     marginBottom: 32,
     fontFamily: 'Roboto-Bold',
   },
-  btn: {
+  registerBtn: {
     borderRadius: 100,
     backgroundColor: '#FF6C00',
     height: 50,
@@ -155,9 +158,20 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 27,
   },
-  btnText: {
+  loginBtn: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 16,
+    marginBottom: 80,
+  },
+  registerBtnText: {
     fontSize: 16,
     color: '#fff',
+    fontFamily: 'Roboto-Medium',
+  },
+  loginBtnText: {
+    fontSize: 16,
+    color: '#1B4371',
     fontFamily: 'Roboto-Medium',
   },
   linkText: {

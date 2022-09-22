@@ -86,17 +86,20 @@ export default function LoginScreen({ navigation }) {
                   }
                 />
                 <TouchableOpacity
-                  style={styles.btn}
+                  style={styles.loginBtn}
                   activeOpacity={0.8}
                   onPress={handleSubmit}
                 >
-                  <Text style={styles.btnText}>Войти</Text>
+                  <Text style={styles.loginBtnText}>Войти</Text>
                 </TouchableOpacity>
-                <Button
+                <TouchableOpacity
+                  style={styles.registerBtn}
                   onPress={() => navigation.navigate('Register')}
-                  title="Нет аккаунта? Зарегистрироваться"
-                  style={styles.linkText}
-                />
+                >
+                  <Text style={styles.registerBtnText}>
+                    Нет аккаунта? Зарегистрироваться
+                  </Text>
+                </TouchableOpacity>
               </View>
             </View>
           </KeyboardAvoidingView>
@@ -139,7 +142,7 @@ const styles = StyleSheet.create({
     marginBottom: 32,
     fontFamily: 'Roboto-Bold',
   },
-  btn: {
+  loginBtn: {
     borderRadius: 100,
     backgroundColor: '#FF6C00',
     height: 50,
@@ -147,9 +150,20 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 27,
   },
-  btnText: {
+  registerBtn: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 16,
+    marginBottom: 80,
+  },
+  loginBtnText: {
     fontSize: 16,
     color: '#fff',
+    fontFamily: 'Roboto-Medium',
+  },
+  registerBtnText: {
+    fontSize: 16,
+    color: '#1B4371',
     fontFamily: 'Roboto-Medium',
   },
   linkText: {
