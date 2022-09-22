@@ -1,7 +1,7 @@
 import { createStackNavigator } from '@react-navigation/stack';
-import { CommentScreen } from './nestedScreen/CommentScreen';
-import { DefaultScreenPosts } from './nestedScreen/DefaultScreen';
-import { MapScreen } from './nestedScreen/MapScreen';
+import { CommentScreen } from '../nestedScreen/CommentScreen';
+import { DefaultScreenPosts } from '../nestedScreen/DefaultScreen';
+import { MapScreen } from '../nestedScreen/MapScreen';
 
 const NestedScreen = createStackNavigator();
 

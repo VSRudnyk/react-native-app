@@ -1,6 +1,5 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
-import { createStackNavigator } from '@react-navigation/stack';
 
 export const MapScreen = () => {
   return (
