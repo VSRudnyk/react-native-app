@@ -24,7 +24,7 @@ export const DefaultScreenPosts = ({ route, navigation }) => {
       <Button title="go to map" onPress={() => navigation.navigate('Map')} />
       <Button
         title="go to comments"
-        onPress={() => navigation.navigate('Comment')}
+        onPress={() => navigation.navigate('Comments')}
       />
     </View>
   );
@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    marginTop: 40,
+    // marginTop: 40,
     backgroundColor: 'white',
   },
   imageWrapper: {

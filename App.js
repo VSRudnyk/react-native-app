@@ -5,6 +5,8 @@ import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { NavigationContainer } from '@react-navigation/native';
 import { useRoute } from './router';
+import { Provider } from 'react-redux';
+import { store } from './redux/store';
 
 export default function App() {
   const routing = useRoute({});
@@ -32,10 +34,12 @@ export default function App() {
   }
 
   return (
-    <View style={styles.container} onLayout={onLayoutRootView}>
-      <NavigationContainer>{routing}</NavigationContainer>
-      <StatusBar style="auto" />
-    </View>
+    <Provider store={store}>
+      <View style={styles.container} onLayout={onLayoutRootView}>
+        <NavigationContainer>{routing}</NavigationContainer>
+        <StatusBar style="auto" />
+      </View>
+    </Provider>
   );
 }
 
