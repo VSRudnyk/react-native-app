@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-
 import {
   StyleSheet,
   Text,
@@ -11,9 +10,10 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   Dimensions,
-  Button,
   LogBox,
 } from 'react-native';
+import { useDispatch } from 'react-redux';
+import { authSignInUser } from '../../redux/auth/authOperations';
 
 const initialState = {
   email: '',
@@ -21,6 +21,7 @@ const initialState = {
 };
 
 export default function LoginScreen({ navigation }) {
+  const dispatch = useDispatch();
   LogBox.ignoreLogs(['Remote debugger']);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [state, setState] = useState(initialState);
@@ -36,7 +37,7 @@ export default function LoginScreen({ navigation }) {
     };
     Dimensions.addEventListener('change', onChange);
     return () => {
-      Dimensions?.remove();
+      Dimensions.remove();
     };
   }, []);
 
@@ -47,6 +48,7 @@ export default function LoginScreen({ navigation }) {
 
   const handleSubmit = () => {
     Keyboard.dismiss();
+    dispatch(authSignInUser(state));
     setState(initialState);
   };
 

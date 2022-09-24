@@ -1,18 +1,25 @@
-import React, { useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View } from 'react-native';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { NavigationContainer } from '@react-navigation/native';
-import { useRoute } from './router';
 import { Provider } from 'react-redux';
+import { useRoute } from './router';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { store } from './redux/store';
 
 export default function App() {
-  const routing = useRoute(false);
+  const [user, serUser] = useState(null);
+  const routing = useRoute(user);
   const [fontsLoaded] = useFonts({
     'Roboto-Medium': require('./assets/fonts/Roboto-Medium.ttf'),
     'Roboto-Bold': require('./assets/fonts/Roboto-Bold.ttf'),
+  });
+
+  const auth = getAuth();
+  onAuthStateChanged(auth, (user) => {
+    serUser(user);
   });
 
   useEffect(() => {

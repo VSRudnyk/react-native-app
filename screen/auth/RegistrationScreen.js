@@ -11,8 +11,8 @@ import {
   KeyboardAvoidingView,
   Dimensions,
 } from 'react-native';
-// import { authSignUpUser } from '../../redux/auth/authOperations';
-// import { useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { authSignUpUser } from '../../redux/auth/authOperations';
 
 const initialState = {
   login: '',
