@@ -36,9 +36,6 @@ export default function LoginScreen({ navigation }) {
       setdimensions(width);
     };
     Dimensions.addEventListener('change', onChange);
-    return () => {
-      Dimensions.remove();
-    };
   }, []);
 
   const keyboardHide = () => {
