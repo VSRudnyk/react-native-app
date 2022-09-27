@@ -1,25 +1,16 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useEffect, useCallback } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View } from 'react-native';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
-import { NavigationContainer } from '@react-navigation/native';
 import { Provider } from 'react-redux';
-import { useRoute } from './router';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { store } from './redux/store';
+import { Main } from './components/Main';
 
 export default function App() {
-  const [user, serUser] = useState(null);
-  const routing = useRoute(false);
   const [fontsLoaded] = useFonts({
     'Roboto-Medium': require('./assets/fonts/Roboto-Medium.ttf'),
     'Roboto-Bold': require('./assets/fonts/Roboto-Bold.ttf'),
-  });
-
-  const auth = getAuth();
-  onAuthStateChanged(auth, (user) => {
-    serUser(user);
   });
 
   useEffect(() => {
@@ -43,7 +34,7 @@ export default function App() {
   return (
     <Provider store={store}>
       <View style={styles.container} onLayout={onLayoutRootView}>
-        <NavigationContainer>{routing}</NavigationContainer>
+        <Main />
         <StatusBar style="auto" />
       </View>
     </Provider>

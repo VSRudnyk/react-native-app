@@ -3,42 +3,50 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   updateProfile,
+  onAuthStateChanged,
 } from 'firebase/auth';
 import { app } from '../../firebase/config';
 import { authSlice } from './authReducer';
 
+const auth = getAuth(app);
+
 export const authSignUpUser =
   ({ email, password, login }) =>
   async (dispatch, getSatte) => {
-    const auth = getAuth(app);
-    await createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        updateProfile(auth.currentUser, { displayName: login });
+    try {
+      await createUserWithEmailAndPassword(auth, email, password);
 
-        console.log(user);
-        dispatch(authSlice.actions.updateUserProfile({ userId: user.uid }));
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-      });
+      const user = await auth.currentUser;
+
+      await updateProfile(auth.currentUser, { displayName: login });
+
+      const userUpdateProfile = {
+        userId: user.uid,
+        login: user.displayName,
+      };
+      dispatch(authSlice.actions.updateUserProfile(userUpdateProfile));
+    } catch (error) {
+      console.log(error);
+      console.log(error.message);
+    }
   };
 
 export const authSignInUser =
   ({ email, password }) =>
   async (dispatch, getSatte) => {
-    const auth = getAuth(app);
-    await signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-      });
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      const user = await auth.currentUser;
+    } catch (error) {
+      console.log(error);
+      console.log(error.message);
+    }
   };
 
 export const authSignOutUser = () => async (dispatch, getSatte) => {};
 
-export const authStateChangeUser = () => async (dispatch, getSatte) => {};
+export const authStateChangeUser = () => async (dispatch, getSatte) => {
+  await onAuthStateChanged(auth, (user) => {
+    setUser(user);
+  });
+};
