@@ -3,6 +3,8 @@ import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { Camera } from 'expo-camera';
 import { useIsFocused } from '@react-navigation/native';
 import * as Location from 'expo-location';
+import { uploadBytes, ref } from 'firebase/storage';
+import { storage } from '../../firebase/config';
 
 export const CreateScreen = ({ navigation }) => {
   const [hasCameraPermission, setHasCameraPermission] = useState(null);
@@ -38,7 +40,19 @@ export const CreateScreen = ({ navigation }) => {
   };
 
   const sendPhoto = () => {
+    uploadPhotoToServer();
     navigation.navigate('DefaultScreen', { photo });
+  };
+
+  const uploadPhotoToServer = async () => {
+    const response = await fetch(photo);
+    const file = await response.blob();
+
+    const uniquePostId = Date.now().toString();
+
+    const storageRef = await ref(storage, `images/${uniquePostId}`);
+
+    await uploadBytes(storageRef, file);
   };
 
   return (
