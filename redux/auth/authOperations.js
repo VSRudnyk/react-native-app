@@ -2,6 +2,7 @@ import {
   getAuth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  updateProfile,
 } from 'firebase/auth';
 import { app } from '../../firebase/config';
 import { authSlice } from './authReducer';
@@ -13,6 +14,9 @@ export const authSignUpUser =
     await createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         const user = userCredential.user;
+        updateProfile(auth.currentUser, { displayName: login });
+
+        console.log(user);
         dispatch(authSlice.actions.updateUserProfile({ userId: user.uid }));
       })
       .catch((error) => {

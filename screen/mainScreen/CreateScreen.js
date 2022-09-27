@@ -39,7 +39,6 @@ export const CreateScreen = ({ navigation }) => {
 
   const sendPhoto = () => {
     navigation.navigate('DefaultScreen', { photo });
-    console.log(location);
   };
 
   return (
