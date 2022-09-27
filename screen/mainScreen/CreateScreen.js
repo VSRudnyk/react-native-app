@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { Camera } from 'expo-camera';
 import { useIsFocused } from '@react-navigation/native';
 import * as Location from 'expo-location';
-import { uploadBytes, ref } from 'firebase/storage';
+import { uploadBytes, ref, getDownloadURL } from 'firebase/storage';
 import { storage } from '../../firebase/config';
 
 export const CreateScreen = ({ navigation }) => {
@@ -53,6 +53,12 @@ export const CreateScreen = ({ navigation }) => {
     const storageRef = await ref(storage, `images/${uniquePostId}`);
 
     await uploadBytes(storageRef, file);
+
+    await getDownloadURL(storageRef)
+      .then((url) => {
+        console.log(url);
+      })
+      .catch((error) => console.log(error));
   };
 
   return (
