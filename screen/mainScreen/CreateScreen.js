@@ -1,25 +1,38 @@
 import { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  TextInput,
+} from 'react-native';
+import { useSelector } from 'react-redux';
 import { Camera } from 'expo-camera';
 import { useIsFocused } from '@react-navigation/native';
 import * as Location from 'expo-location';
 import { uploadBytes, ref, getDownloadURL } from 'firebase/storage';
+import { collection, addDoc } from 'firebase/firestore';
 import { storage } from '../../firebase/config';
+import { db } from '../../firebase/config';
 
 export const CreateScreen = ({ navigation }) => {
   const [hasCameraPermission, setHasCameraPermission] = useState(null);
   const [camera, setCamera] = useState(null);
   const [photo, setPhoto] = useState(null);
+  const [photoUrl, setPhotoUrl] = useState('');
   const [location, setLocation] = useState(null);
+  const [comment, setComment] = useState('');
   const isFocused = useIsFocused();
+
+  console.log(photoUrl);
+
+  const { userId, login } = useSelector((state) => state.auth);
 
   useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        setErrorMsg('Permission to access location was denied');
-        return;
-      }
+
       let location = await Location.getCurrentPositionAsync({});
       setLocation(location);
 
@@ -41,7 +54,23 @@ export const CreateScreen = ({ navigation }) => {
 
   const sendPhoto = () => {
     uploadPhotoToServer();
+    uploadPostToServer();
     navigation.navigate('DefaultScreen', { photo });
+  };
+
+  const uploadPostToServer = async () => {
+    try {
+      const createPost = await addDoc(collection(db, 'posts'), {
+        photoUrl,
+        comment,
+        location: location.coords,
+        userId,
+        login,
+      });
+      console.log('Document written with ID: ', createPost.id);
+    } catch (e) {
+      console.error('Error adding document: ', e);
+    }
   };
 
   const uploadPhotoToServer = async () => {
@@ -56,7 +85,7 @@ export const CreateScreen = ({ navigation }) => {
 
     await getDownloadURL(storageRef)
       .then((url) => {
-        console.log(url);
+        setPhotoUrl(url);
       })
       .catch((error) => console.log(error));
   };
@@ -80,6 +109,9 @@ export const CreateScreen = ({ navigation }) => {
           </Camera>
         </View>
       )}
+      <View style={styles.inputContainer}>
+        <TextInput style={styles.input} onChangeText={setComment} />
+      </View>
       <TouchableOpacity onPress={sendPhoto} style={styles.sendBtn}>
         <Text style={styles.sendText}>Send</Text>
       </TouchableOpacity>
@@ -137,5 +169,13 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderColor: '#fff',
     borderWidth: 1,
+  },
+  inputContainer: {
+    marginHorizontal: 10,
+  },
+  input: {
+    height: 50,
+    borderBottomWidth: 1,
+    borderBottomColor: '#20b2aa',
   },
 });
