@@ -25,14 +25,14 @@ export const CreateScreen = ({ navigation }) => {
   const [comment, setComment] = useState('');
   const isFocused = useIsFocused();
 
-  console.log(photoUrl);
-
   const { userId, login } = useSelector((state) => state.auth);
 
   useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
-
+      if (status !== 'granted') {
+        console.log('Permission to access location was denied');
+      }
       let location = await Location.getCurrentPositionAsync({});
       setLocation(location);
 
@@ -58,21 +58,6 @@ export const CreateScreen = ({ navigation }) => {
     navigation.navigate('DefaultScreen', { photo });
   };
 
-  const uploadPostToServer = async () => {
-    try {
-      const createPost = await addDoc(collection(db, 'posts'), {
-        photoUrl,
-        comment,
-        location: location.coords,
-        userId,
-        login,
-      });
-      console.log('Document written with ID: ', createPost.id);
-    } catch (e) {
-      console.error('Error adding document: ', e);
-    }
-  };
-
   const uploadPhotoToServer = async () => {
     const response = await fetch(photo);
     const file = await response.blob();
@@ -88,6 +73,21 @@ export const CreateScreen = ({ navigation }) => {
         setPhotoUrl(url);
       })
       .catch((error) => console.log(error));
+  };
+
+  const uploadPostToServer = async () => {
+    try {
+      const createPost = await addDoc(collection(db, 'posts'), {
+        photoUrl,
+        comment,
+        location: location.coords,
+        userId,
+        login,
+      });
+      console.log('Document written with ID: ', createPost.id);
+    } catch (e) {
+      console.error('Error adding document: ', e);
+    }
   };
 
   return (
