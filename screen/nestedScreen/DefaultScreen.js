@@ -11,13 +11,11 @@ export const DefaultScreenPosts = ({ route, navigation }) => {
 
     onSnapshot(colRef, (snapshot) => {
       snapshot.docs.forEach((doc) => {
-        setPosts('hello');
-        // { ...doc.data(), id: doc.id }
+        setPosts({ ...doc.data(), id: doc.id });
       });
     });
+    console.log(posts);
   };
-
-  console.log(posts.id);
 
   useEffect(() => {
     getAllPosts();
