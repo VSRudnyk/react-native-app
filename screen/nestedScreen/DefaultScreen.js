@@ -6,18 +6,18 @@ import { db } from '../../firebase/config';
 export const DefaultScreenPosts = ({ route, navigation }) => {
   const [posts, setPosts] = useState([]);
 
-  let x = [];
-
   const getAllPosts = async () => {
     const colRef = collection(db, 'posts');
 
-    onSnapshot(colRef, (data) => {
-      data.docs.map((doc) => {
-        x.push({ ...doc.data(), id: doc.id });
+    onSnapshot(colRef, (snapshot) => {
+      snapshot.docs.forEach((doc) => {
+        setPosts('hello');
+        // { ...doc.data(), id: doc.id }
       });
     });
-    console.log(x);
   };
+
+  console.log(posts.id);
 
   useEffect(() => {
     getAllPosts();
@@ -25,9 +25,8 @@ export const DefaultScreenPosts = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text>{x.photoUrl}</Text>
       <FlatList
-        data={x}
+        data={posts}
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item }) => (
           <View style={styles.imageWrapper}>
