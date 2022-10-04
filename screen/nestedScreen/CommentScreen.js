@@ -4,16 +4,23 @@ import {
   TextInput,
   StyleSheet,
   TouchableOpacity,
+  FlatList,
+  SafeAreaView,
 } from 'react-native';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { collection, addDoc, doc } from 'firebase/firestore';
+import { collection, addDoc, doc, onSnapshot } from 'firebase/firestore';
 import { db } from '../../firebase/config';
 
 export const CommentsScreen = ({ route }) => {
   const { postId } = route.params;
   const [comment, setComment] = useState('');
+  const [allComments, setAllComments] = useState([]);
   const { login } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    getAllPost();
+  }, []);
 
   const createPost = async () => {
     const docId = doc(db, 'posts', `${postId}`);
@@ -24,14 +31,38 @@ export const CommentsScreen = ({ route }) => {
     });
   };
 
+  const getAllPost = async () => {
+    const docId = doc(db, 'posts', `${postId}`);
+    const commentCollection = collection(docId, 'comment');
+    await onSnapshot(commentCollection, (snapshot) => {
+      setAllComments(
+        snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
+      );
+    });
+  };
+
   return (
     <View style={styles.container}>
-      <View style={styles.inputContainer}>
-        <TextInput style={styles.input} onChangeText={setComment} />
+      <SafeAreaView>
+        <FlatList
+          data={allComments}
+          renderItem={({ item }) => (
+            <View style={styles.commentContainer}>
+              <Text>{item.login}</Text>
+              <Text>{item.comment}</Text>
+            </View>
+          )}
+          keyExtractor={(item) => item.id}
+        />
+      </SafeAreaView>
+      <View>
+        <View style={styles.inputContainer}>
+          <TextInput style={styles.input} onChangeText={setComment} />
+        </View>
+        <TouchableOpacity onPress={createPost} style={styles.sendBtn}>
+          <Text style={styles.sendText}>Add post</Text>
+        </TouchableOpacity>
       </View>
-      <TouchableOpacity onPress={createPost} style={styles.sendBtn}>
-        <Text style={styles.sendText}>Add post</Text>
-      </TouchableOpacity>
     </View>
   );
 };
@@ -39,7 +70,14 @@ export const CommentsScreen = ({ route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'flex-end',
+    justifyContent: 'space-between',
+  },
+  commentContainer: {
+    borderWidth: 1,
+    borderColor: '#20b2aa',
+    marginHorizontal: 10,
+    padding: 10,
+    marginBottom: 10,
   },
   sendBtn: {
     marginHorizontal: 30,
