@@ -9,16 +9,18 @@ export const DefaultScreenPosts = ({ route, navigation }) => {
   const getAllPosts = async () => {
     const colRef = collection(db, 'posts');
 
-    onSnapshot(colRef, (snapshot) => {
-      snapshot.docs.forEach((doc) => {
-        setPosts({ ...doc.data(), id: doc.id });
-      });
+    await onSnapshot(colRef, (snapshot) => {
+      setPosts(snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+
+      // snapshot.docs.forEach((doc) => {
+      //   setPosts({ ...doc.data(), id: doc.id });
+      // });
     });
-    console.log(posts);
   };
 
   useEffect(() => {
     getAllPosts();
+    console.log(posts);
   }, []);
 
   return (
@@ -28,7 +30,7 @@ export const DefaultScreenPosts = ({ route, navigation }) => {
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item }) => (
           <View style={styles.imageWrapper}>
-            <Image source={{ uri: item.photoUrl }} style={styles.image} />
+            <Image source={{ uri: item.photo }} style={styles.image} />
           </View>
         )}
       />

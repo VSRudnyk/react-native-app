@@ -53,13 +53,25 @@ export const CreateScreen = ({ navigation }) => {
   };
 
   const sendPhoto = () => {
-    uploadPostToServer();
-    uploadPhotoToServer();
     navigation.navigate('DefaultScreen');
+    uploadPostToServer();
+    setPhoto(null);
+  };
+
+  const uploadPostToServer = async () => {
+    const photo = await uploadPhotoToServer();
+    await addDoc(collection(db, 'posts'), {
+      photo,
+      comment,
+      location: location.coords,
+      userId,
+      login,
+    });
   };
 
   const uploadPhotoToServer = async () => {
     const response = await fetch(photo);
+
     const file = await response.blob();
 
     const uniquePostId = Date.now().toString();
@@ -68,26 +80,8 @@ export const CreateScreen = ({ navigation }) => {
 
     await uploadBytes(storageRef, file);
 
-    await getDownloadURL(storageRef)
-      .then((url) => {
-        setPhotoUrl(url);
-      })
-      .catch((error) => console.log(error));
-  };
-
-  const uploadPostToServer = async () => {
-    try {
-      const createPost = await addDoc(collection(db, 'posts'), {
-        photoUrl,
-        comment,
-        location: location.coords,
-        userId,
-        login,
-      });
-      console.log('Document written with ID: ', createPost.id);
-    } catch (e) {
-      console.error('Error adding document: ', e);
-    }
+    const processedPhoto = await getDownloadURL(storageRef);
+    return processedPhoto;
   };
 
   return (
