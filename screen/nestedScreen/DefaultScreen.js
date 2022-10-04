@@ -11,16 +11,11 @@ export const DefaultScreenPosts = ({ route, navigation }) => {
 
     await onSnapshot(colRef, (snapshot) => {
       setPosts(snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
-
-      // snapshot.docs.forEach((doc) => {
-      //   setPosts({ ...doc.data(), id: doc.id });
-      // });
     });
   };
 
   useEffect(() => {
     getAllPosts();
-    console.log(posts);
   }, []);
 
   return (
@@ -31,13 +26,23 @@ export const DefaultScreenPosts = ({ route, navigation }) => {
         renderItem={({ item }) => (
           <View style={styles.imageWrapper}>
             <Image source={{ uri: item.photo }} style={styles.image} />
+            <View>
+              <Text>{item.comment}</Text>
+            </View>
+            <View>
+              <Button
+                title="go to map"
+                onPress={() =>
+                  navigation.navigate('Map', { location: item.location })
+                }
+              />
+              <Button
+                title="go to comments"
+                onPress={() => navigation.navigate('Comments')}
+              />
+            </View>
           </View>
         )}
-      />
-      <Button title="go to map" onPress={() => navigation.navigate('Map')} />
-      <Button
-        title="go to comments"
-        onPress={() => navigation.navigate('Comments')}
       />
     </View>
   );
