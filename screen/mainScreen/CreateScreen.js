@@ -20,7 +20,6 @@ export const CreateScreen = ({ navigation }) => {
   const [hasCameraPermission, setHasCameraPermission] = useState(null);
   const [camera, setCamera] = useState(null);
   const [photo, setPhoto] = useState(null);
-  const [photoUrl, setPhotoUrl] = useState('');
   const [location, setLocation] = useState(null);
   const [comment, setComment] = useState('');
   const isFocused = useIsFocused();
