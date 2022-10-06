@@ -13,18 +13,24 @@ const auth = getAuth(app);
 const { updateUserProfile, authStateChange, authSignOut } = authSlice.actions;
 
 export const authSignUpUser =
-  ({ email, password, login }) =>
+  ({ email, password, login, userImage }) =>
   async (dispatch, getSatte) => {
+    console.log(userImage);
     try {
       await createUserWithEmailAndPassword(auth, email, password);
 
       const user = await auth.currentUser;
+      console.log(user);
 
-      await updateProfile(auth.currentUser, { displayName: login });
+      await updateProfile(auth.currentUser, {
+        displayName: login,
+        photoURL: userImage,
+      });
 
       const userUpdateProfile = {
         userId: user.uid,
         login: user.displayName,
+        userImage: user.photoURL,
       };
       dispatch(updateUserProfile(userUpdateProfile));
     } catch (error) {

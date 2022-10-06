@@ -15,12 +15,15 @@ import {
 import { useDispatch } from 'react-redux';
 import { AntDesign } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
+import { uploadBytes, ref, getDownloadURL } from 'firebase/storage';
+import { storage } from '../../firebase/config';
 import { authSignUpUser } from '../../redux/auth/authOperations';
 
 const initialState = {
   login: '',
   email: '',
   password: '',
+  userImage: '',
 };
 
 export default function RegistrationScreen({ navigation }) {
@@ -49,8 +52,26 @@ export default function RegistrationScreen({ navigation }) {
 
   const handleSubmit = () => {
     Keyboard.dismiss();
+    console.log(state);
+    uploadPhotoToServer();
     dispatch(authSignUpUser(state));
     setState(initialState);
+  };
+
+  const uploadPhotoToServer = async () => {
+    const response = await fetch(userImage);
+
+    const file = await response.blob();
+
+    const uniquePostId = Date.now().toString();
+
+    const storageRef = await ref(storage, `userImage/${uniquePostId}`);
+
+    await uploadBytes(storageRef, file);
+
+    const processedPhoto = await getDownloadURL(storageRef);
+
+    setState((prevState) => ({ ...prevState, userImage: processedPhoto }));
   };
 
   const pickImage = async () => {
