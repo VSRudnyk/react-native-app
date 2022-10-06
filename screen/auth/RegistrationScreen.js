@@ -10,8 +10,11 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   Dimensions,
+  Image,
 } from 'react-native';
 import { useDispatch } from 'react-redux';
+import { AntDesign } from '@expo/vector-icons';
+import * as ImagePicker from 'expo-image-picker';
 import { authSignUpUser } from '../../redux/auth/authOperations';
 
 const initialState = {
@@ -28,6 +31,7 @@ export default function RegistrationScreen({ navigation }) {
   const [dimensions, setdimensions] = useState(
     Dimensions.get('window').width - 20 * 2
   );
+  const [userImage, setUserImage] = useState(null);
 
   useEffect(() => {
     const onChange = () => {
@@ -49,6 +53,19 @@ export default function RegistrationScreen({ navigation }) {
     setState(initialState);
   };
 
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 4],
+      quality: 1,
+    });
+
+    if (!result.cancelled) {
+      setUserImage(result.uri);
+    }
+  };
+
   return (
     <>
       <TouchableWithoutFeedback onPress={keyboardHide}>
@@ -63,6 +80,21 @@ export default function RegistrationScreen({ navigation }) {
                 marginBottom: isShowKeyboard ? 100 : 0,
               }}
             >
+              <View style={styles.photoContainer}>
+                <TouchableOpacity
+                  style={styles.addPhoto}
+                  activeOpacity={0.8}
+                  onPress={pickImage}
+                >
+                  <AntDesign name="pluscircleo" size={25} color="#FF6C00" />
+                </TouchableOpacity>
+                {userImage && (
+                  <Image
+                    source={{ uri: userImage }}
+                    style={{ width: 120, height: 120, borderRadius: 16 }}
+                  />
+                )}
+              </View>
               <Text style={styles.registerTitle}>Регистрация</Text>
               <View style={styles.formContainer}>
                 <TextInput
@@ -124,12 +156,29 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   background: {
+    position: 'relative',
     backgroundColor: '#fff',
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
   },
   formContainer: {
     marginHorizontal: 16,
+  },
+  photoContainer: {
+    position: 'absolute',
+    top: -60,
+    left: '50%',
+    transform: [{ translateX: -60 }],
+    width: 120,
+    height: 120,
+    backgroundColor: '#F6F6F6',
+    borderRadius: 16,
+  },
+  addPhoto: {
+    position: 'absolute',
+    bottom: 14,
+    right: -12,
+    zIndex: 999,
   },
   input: {
     borderWidth: 1,
