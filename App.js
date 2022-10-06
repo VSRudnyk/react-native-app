@@ -4,6 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { Provider } from 'react-redux';
+import FlashMessage from 'react-native-flash-message';
 import { store } from './redux/store';
 import { Main } from './components/Main';
 
@@ -37,6 +38,7 @@ export default function App() {
         <Main />
         <StatusBar style="auto" />
       </View>
+      <FlashMessage position="top" />
     </Provider>
   );
 }

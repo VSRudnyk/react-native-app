@@ -8,6 +8,7 @@ import {
 } from 'firebase/auth';
 import { app } from '../../firebase/config';
 import { authSlice } from './authReducer';
+import { notification } from '../../components/Notification';
 
 const auth = getAuth(app);
 const { updateUserProfile, authStateChange, authSignOut } = authSlice.actions;
@@ -20,22 +21,22 @@ export const authSignUpUser =
       await createUserWithEmailAndPassword(auth, email, password);
 
       const user = await auth.currentUser;
-      console.log(user);
 
       await updateProfile(auth.currentUser, {
         displayName: login,
         photoURL: userImage,
       });
 
-      const userUpdateProfile = {
+      const userUpdateProfile = await {
         userId: user.uid,
         login: user.displayName,
         userImage: user.photoURL,
       };
+      console.log(user.photoURL);
       dispatch(updateUserProfile(userUpdateProfile));
+      notification(`Пользователь ${login} успешно зарегистрирован`, 'success');
     } catch (error) {
-      console.log(error);
-      console.log(error.message);
+      notification(`Пользователь с почтой ${email} уже существует`, 'danger');
     }
   };
 

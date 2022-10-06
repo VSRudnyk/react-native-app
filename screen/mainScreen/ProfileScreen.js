@@ -15,7 +15,7 @@ import { db } from '../../firebase/config';
 export const ProfileScreen = () => {
   const dispatch = useDispatch();
   const [userPosts, setUserPosts] = useState([]);
-  const { userId } = useSelector((state) => state.auth);
+  const { userId, userImage } = useSelector((state) => state.auth);
 
   useEffect(() => {
     getUserPost();
@@ -36,6 +36,7 @@ export const ProfileScreen = () => {
 
   return (
     <View style={styles.container}>
+      <Image source={{ uri: userImage }} style={styles.userImage}></Image>
       <TouchableOpacity
         style={styles.signOutBtn}
         activeOpacity={0.8}
@@ -62,6 +63,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 40,
+    marginTop: 40,
   },
   signOutBtn: {
     borderRadius: 10,
@@ -77,6 +79,11 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  userImage: {
+    width: 120,
+    height: 120,
+    borderRadius: 10,
   },
   image: {
     width: 350,

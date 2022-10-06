@@ -52,10 +52,9 @@ export default function RegistrationScreen({ navigation }) {
 
   const handleSubmit = () => {
     Keyboard.dismiss();
-    console.log(state);
     uploadPhotoToServer();
     dispatch(authSignUpUser(state));
-    setState(initialState);
+    // setState(initialState);
   };
 
   const uploadPhotoToServer = async () => {
@@ -75,15 +74,19 @@ export default function RegistrationScreen({ navigation }) {
   };
 
   const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [4, 4],
-      quality: 1,
-    });
+    if (!userImage) {
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        allowsEditing: true,
+        aspect: [4, 4],
+        quality: 1,
+      });
 
-    if (!result.cancelled) {
-      setUserImage(result.uri);
+      if (!result.cancelled) {
+        setUserImage(result.uri);
+      }
+    } else {
+      setUserImage(null);
     }
   };
 
@@ -103,11 +106,20 @@ export default function RegistrationScreen({ navigation }) {
             >
               <View style={styles.photoContainer}>
                 <TouchableOpacity
-                  style={styles.addPhoto}
+                  style={{
+                    ...styles.addPhoto,
+                    transform: userImage
+                      ? [{ rotate: '45deg' }]
+                      : [{ rotate: '0deg' }],
+                  }}
                   activeOpacity={0.8}
                   onPress={pickImage}
                 >
-                  <AntDesign name="pluscircleo" size={25} color="#FF6C00" />
+                  <AntDesign
+                    name="pluscircleo"
+                    size={25}
+                    color={userImage ? '#BDBDBD' : '#FF6C00'}
+                  />
                 </TouchableOpacity>
                 {userImage && (
                   <Image
