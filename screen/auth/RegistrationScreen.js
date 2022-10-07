@@ -50,11 +50,12 @@ export default function RegistrationScreen({ navigation }) {
     Keyboard.dismiss();
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     Keyboard.dismiss();
-    uploadPhotoToServer();
-    dispatch(authSignUpUser(state));
-    // setState(initialState);
+    const photoURL = await uploadPhotoToServer();
+    await setState((prevState) => ({ ...prevState, userImage: photoURL }));
+    await dispatch(authSignUpUser(state));
+    setState(initialState);
   };
 
   const uploadPhotoToServer = async () => {
@@ -70,7 +71,7 @@ export default function RegistrationScreen({ navigation }) {
 
     const processedPhoto = await getDownloadURL(storageRef);
 
-    setState((prevState) => ({ ...prevState, userImage: processedPhoto }));
+    return processedPhoto;
   };
 
   const pickImage = async () => {

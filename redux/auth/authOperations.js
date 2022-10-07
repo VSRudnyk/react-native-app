@@ -16,7 +16,6 @@ const { updateUserProfile, authStateChange, authSignOut } = authSlice.actions;
 export const authSignUpUser =
   ({ email, password, login, userImage }) =>
   async (dispatch, getSatte) => {
-    console.log(userImage);
     try {
       await createUserWithEmailAndPassword(auth, email, password);
 
@@ -32,7 +31,7 @@ export const authSignUpUser =
         login: user.displayName,
         userImage: user.photoURL,
       };
-      console.log(user.photoURL);
+
       dispatch(updateUserProfile(userUpdateProfile));
       notification(`Пользователь ${login} успешно зарегистрирован`, 'success');
     } catch (error) {
