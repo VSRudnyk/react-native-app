@@ -53,9 +53,11 @@ export default function RegistrationScreen({ navigation }) {
   const handleSubmit = async () => {
     Keyboard.dismiss();
     const photoURL = await uploadPhotoToServer();
-    await setState((prevState) => ({ ...prevState, userImage: photoURL }));
-    await dispatch(authSignUpUser(state));
-    setState(initialState);
+    // setState((prevState) => ({ ...prevState, userImage: photoURL }));
+    // console.log('1', photoURL);
+    // console.log('2', state);
+    dispatch(authSignUpUser({ ...state, userImage: photoURL }));
+    // setState(initialState);
   };
 
   const uploadPhotoToServer = async () => {

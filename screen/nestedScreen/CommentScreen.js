@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   FlatList,
   SafeAreaView,
+  Image,
 } from 'react-native';
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
@@ -16,7 +17,7 @@ export const CommentsScreen = ({ route }) => {
   const { postId } = route.params;
   const [comment, setComment] = useState('');
   const [allComments, setAllComments] = useState([]);
-  const { login } = useSelector((state) => state.auth);
+  const { login, userImage } = useSelector((state) => state.auth);
 
   useEffect(() => {
     getAllPost();
@@ -28,6 +29,7 @@ export const CommentsScreen = ({ route }) => {
     await addDoc(commentCollection, {
       comment,
       login,
+      userImage,
     });
   };
 
@@ -48,6 +50,10 @@ export const CommentsScreen = ({ route }) => {
           data={allComments}
           renderItem={({ item }) => (
             <View style={styles.commentContainer}>
+              <Image
+                source={{ uri: item.userImage }}
+                style={{ width: 60, height: 60, borderRadius: 10 }}
+              />
               <Text>{item.login}</Text>
               <Text>{item.comment}</Text>
             </View>

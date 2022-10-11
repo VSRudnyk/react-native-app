@@ -52,7 +52,7 @@ export const CreateScreen = ({ navigation }) => {
   };
 
   const sendPhoto = () => {
-    navigation.navigate('DefaultScreen');
+    navigation.navigate('Публикации');
     uploadPostToServer();
     setPhoto(null);
   };
