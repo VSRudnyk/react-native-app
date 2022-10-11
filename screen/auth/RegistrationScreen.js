@@ -18,6 +18,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { uploadBytes, ref, getDownloadURL } from 'firebase/storage';
 import { storage } from '../../firebase/config';
 import { authSignUpUser } from '../../redux/auth/authOperations';
+import { Loader } from '../../components/Loader';
 
 const initialState = {
   login: '',
@@ -31,6 +32,7 @@ export default function RegistrationScreen({ navigation }) {
 
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [state, setState] = useState(initialState);
+  const [loading, setLoading] = useState(false);
   const [dimensions, setdimensions] = useState(
     Dimensions.get('window').width - 20 * 2
   );
@@ -52,12 +54,10 @@ export default function RegistrationScreen({ navigation }) {
 
   const handleSubmit = async () => {
     Keyboard.dismiss();
+    setLoading(true);
     const photoURL = await uploadPhotoToServer();
-    // setState((prevState) => ({ ...prevState, userImage: photoURL }));
-    // console.log('1', photoURL);
-    // console.log('2', state);
     dispatch(authSignUpUser({ ...state, userImage: photoURL }));
-    // setState(initialState);
+    setState(initialState);
   };
 
   const uploadPhotoToServer = async () => {
@@ -181,6 +181,7 @@ export default function RegistrationScreen({ navigation }) {
           </KeyboardAvoidingView>
         </ImageBackground>
       </TouchableWithoutFeedback>
+      {loading && <Loader />}
     </>
   );
 }

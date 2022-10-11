@@ -35,6 +35,8 @@ export const useRoute = (isAuth) => {
     <MainTab.Navigator
       labeled={false}
       barStyle={{ backgroundColor: '#fff', height: 83 }}
+      activeColor="#FF6C00"
+      inactiveColor="#212121CC"
     >
       <MainTab.Screen
         options={{

@@ -35,7 +35,7 @@ export const authSignUpUser =
       dispatch(updateUserProfile(userUpdateProfile));
       notification(`Пользователь ${login} успешно зарегистрирован`, 'success');
     } catch (error) {
-      notification(`Пользователь с почтой ${email} уже существует`, 'danger');
+      notification(error);
     }
   };
 
@@ -62,6 +62,7 @@ export const authStateChangeUser = () => async (dispatch, getSatte) => {
       const userUpdateProfile = {
         userId: user.uid,
         login: user.displayName,
+        userImage: user.photoURL,
       };
       dispatch(authStateChange({ stateChange: true }));
       dispatch(updateUserProfile(userUpdateProfile));

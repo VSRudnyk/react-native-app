@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   FlatList,
 } from 'react-native';
+import { useIsFocused } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import { collection, query, where, onSnapshot } from 'firebase/firestore';
 import { authSignOutUser } from '../../redux/auth/authOperations';
@@ -16,6 +17,7 @@ export const ProfileScreen = () => {
   const dispatch = useDispatch();
   const [userPosts, setUserPosts] = useState([]);
   const { userId, userImage } = useSelector((state) => state.auth);
+  const isFocused = useIsFocused();
 
   useEffect(() => {
     getUserPost();
@@ -36,23 +38,27 @@ export const ProfileScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Image source={{ uri: userImage }} style={styles.userImage}></Image>
-      <TouchableOpacity
-        style={styles.signOutBtn}
-        activeOpacity={0.8}
-        onPress={signOut}
-      >
-        <Text>Sign Out</Text>
-      </TouchableOpacity>
-      <FlatList
-        data={userPosts}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item }) => (
-          <View style={styles.imageWrapper}>
-            <Image source={{ uri: item.photo }} style={styles.image} />
-          </View>
-        )}
-      />
+      {isFocused && (
+        <>
+          <Image source={{ uri: userImage }} style={styles.userImage}></Image>
+          <TouchableOpacity
+            style={styles.signOutBtn}
+            activeOpacity={0.8}
+            onPress={signOut}
+          >
+            <Text>Sign Out</Text>
+          </TouchableOpacity>
+          <FlatList
+            data={userPosts}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({ item }) => (
+              <View style={styles.imageWrapper}>
+                <Image source={{ uri: item.photo }} style={styles.image} />
+              </View>
+            )}
+          />
+        </>
+      )}
     </View>
   );
 };

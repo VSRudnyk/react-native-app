@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { authSignInUser } from '../../redux/auth/authOperations';
+import { Loader } from '../../components/Loader';
 
 const initialState = {
   email: '',
@@ -25,6 +26,7 @@ export default function LoginScreen({ navigation }) {
   LogBox.ignoreLogs(['Remote debugger']);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [state, setState] = useState(initialState);
+  const [loading, setLoading] = useState(false);
   const [dimensions, setdimensions] = useState(
     Dimensions.get('window').width - 20 * 2
   );
@@ -45,6 +47,7 @@ export default function LoginScreen({ navigation }) {
 
   const handleSubmit = () => {
     Keyboard.dismiss();
+    setLoading(true);
     dispatch(authSignInUser(state));
     setState(initialState);
   };
@@ -104,6 +107,7 @@ export default function LoginScreen({ navigation }) {
           </KeyboardAvoidingView>
         </ImageBackground>
       </TouchableWithoutFeedback>
+      {loading && <Loader />}
     </>
   );
 }

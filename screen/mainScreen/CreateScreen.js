@@ -33,6 +33,8 @@ export const CreateScreen = ({ navigation }) => {
         console.log('Permission to access location was denied');
       }
       let location = await Location.getCurrentPositionAsync({});
+      let address = await Location.reverseGeocodeAsync(location.coords);
+      console.log(address);
       setLocation(location);
 
       const cameraStatus = await Camera.requestCameraPermissionsAsync();
@@ -52,7 +54,7 @@ export const CreateScreen = ({ navigation }) => {
   };
 
   const sendPhoto = () => {
-    navigation.navigate('Публикации');
+    navigation.navigate('DefaultScreen');
     uploadPostToServer();
     setPhoto(null);
   };
