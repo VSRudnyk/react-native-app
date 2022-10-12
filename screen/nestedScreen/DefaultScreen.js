@@ -7,15 +7,11 @@ import {
   Text,
   TouchableOpacity,
 } from 'react-native';
-import { useDispatch } from 'react-redux';
 import { collection, onSnapshot } from 'firebase/firestore';
-import { MaterialIcons, EvilIcons } from '@expo/vector-icons';
+import { EvilIcons } from '@expo/vector-icons';
 import { db } from '../../firebase/config';
-import { authSignOutUser } from '../../redux/auth/authOperations';
 
 export const DefaultScreenPosts = ({ route, navigation }) => {
-  console.log(route);
-  const dispatch = useDispatch();
   const [posts, setPosts] = useState([]);
 
   const getAllPosts = async () => {
@@ -30,22 +26,8 @@ export const DefaultScreenPosts = ({ route, navigation }) => {
     getAllPosts();
   }, []);
 
-  const signOut = () => {
-    dispatch(authSignOutUser());
-  };
-
   return (
     <View style={styles.container}>
-      <View style={styles.componentTitle}>
-        <Text style={styles.title}>Публикации</Text>
-        <TouchableOpacity
-          activeOpacity={0.8}
-          style={styles.signOutIcon}
-          onPress={signOut}
-        >
-          <MaterialIcons name="logout" size={24} color="#BDBDBD" />
-        </TouchableOpacity>
-      </View>
       <FlatList
         data={posts}
         keyExtractor={(item, index) => index.toString()}
@@ -88,25 +70,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     backgroundColor: 'white',
-  },
-  componentTitle: {
-    position: 'relative',
-    height: 88,
-    borderBottomWidth: 1,
-    borderBottomColor: '#BDBDBD',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-  },
-  title: {
-    fontFamily: 'Roboto-Medium',
-    fontSize: 17,
-    marginBottom: 11,
-    color: '#212121',
-  },
-  signOutIcon: {
-    position: 'absolute',
-    right: 16,
-    bottom: 10,
   },
   imageWrapper: {
     marginTop: 32,
