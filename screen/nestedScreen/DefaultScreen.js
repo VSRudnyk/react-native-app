@@ -7,12 +7,19 @@ import {
   Text,
   TouchableOpacity,
 } from 'react-native';
-import { collection, onSnapshot } from 'firebase/firestore';
+import {
+  collection,
+  onSnapshot,
+  getDocs,
+  collectionGroup,
+  query,
+} from 'firebase/firestore';
 import { EvilIcons } from '@expo/vector-icons';
 import { db } from '../../firebase/config';
 
 export const DefaultScreenPosts = ({ route, navigation }) => {
   const [posts, setPosts] = useState([]);
+  const [allComments, setAllComments] = useState([]);
 
   const getAllPosts = async () => {
     const colRef = collection(db, 'posts');
@@ -22,9 +29,24 @@ export const DefaultScreenPosts = ({ route, navigation }) => {
     });
   };
 
+  const fetchAllComments = async () => {
+    const comments = query(collectionGroup(db, 'comment'));
+    const querySnapshot = await getDocs(comments);
+    setAllComments(querySnapshot.docs.map((doc) => ({ ...doc.data() })));
+  };
+
+  console.log(allComments);
+
+  const countComments = (postId) => {
+    const number = allComments.filter((comment) => comment.postId === postId);
+
+    return number.length;
+  };
+
   useEffect(() => {
     getAllPosts();
-  }, []);
+    fetchAllComments();
+  }, [allComments]);
 
   return (
     <View style={styles.container}>
@@ -45,7 +67,12 @@ export const DefaultScreenPosts = ({ route, navigation }) => {
                   navigation.navigate('Comments', { postId: item.id })
                 }
               >
-                <EvilIcons name="comment" size={24} color="#BDBDBD" />
+                <View style={styles.commentContainer}>
+                  <EvilIcons name="comment" size={24} color="#BDBDBD" />
+                  <Text style={styles.commentText}>
+                    {countComments(item.id)}
+                  </Text>
+                </View>
               </TouchableOpacity>
               <TouchableOpacity
                 activeOpacity={0.8}
@@ -54,8 +81,12 @@ export const DefaultScreenPosts = ({ route, navigation }) => {
                   navigation.navigate('Map', { location: item.location })
                 }
               >
-                <EvilIcons name="location" size={24} color="#BDBDBD" />
-                <Text></Text>
+                <View style={styles.locationContainer}>
+                  <EvilIcons name="location" size={24} color="#BDBDBD" />
+                  <Text
+                    style={styles.locationText}
+                  >{`${item.location.city}, ${item.location.country}`}</Text>
+                </View>
               </TouchableOpacity>
             </View>
           </View>
@@ -91,5 +122,26 @@ const styles = StyleSheet.create({
   btnContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+  },
+  locationContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 11,
+  },
+  locationText: {
+    color: '#212121',
+    fontFamily: 'Roboto-Medium',
+    marginLeft: 8,
+    textDecorationLine: 'underline',
+  },
+  commentContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 11,
+  },
+  commentText: {
+    color: '#212121',
+    fontFamily: 'Roboto-Medium',
+    marginLeft: 6,
   },
 });

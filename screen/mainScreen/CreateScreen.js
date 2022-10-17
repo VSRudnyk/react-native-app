@@ -34,8 +34,14 @@ export const CreateScreen = ({ navigation }) => {
       }
       let location = await Location.getCurrentPositionAsync({});
       let address = await Location.reverseGeocodeAsync(location.coords);
-      console.log(address);
-      setLocation(location);
+
+      setLocation({
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+        country: address[0].country,
+        city: address[0].city,
+        subregion: address[0].subregion,
+      });
 
       const cameraStatus = await Camera.requestCameraPermissionsAsync();
       setHasCameraPermission(cameraStatus.status === 'granted');
@@ -64,7 +70,7 @@ export const CreateScreen = ({ navigation }) => {
     await addDoc(collection(db, 'posts'), {
       photo,
       comment,
-      location: location.coords,
+      location,
       userId,
       login,
     });

@@ -20,7 +20,7 @@ export const CommentsScreen = ({ route }) => {
   const { login, userImage } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    getAllPost();
+    getCommentById();
   }, []);
 
   const createPost = async () => {
@@ -30,10 +30,11 @@ export const CommentsScreen = ({ route }) => {
       comment,
       login,
       userImage,
+      postId,
     });
   };
 
-  const getAllPost = async () => {
+  const getCommentById = async () => {
     const docId = doc(db, 'posts', `${postId}`);
     const commentCollection = collection(docId, 'comment');
     await onSnapshot(commentCollection, (snapshot) => {
