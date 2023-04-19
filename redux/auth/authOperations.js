@@ -16,24 +16,20 @@ export const authSignUpUser =
   async (dispatch, getSatte) => {
     try {
       await createUserWithEmailAndPassword(auth, email, password);
-
       const user = await auth.currentUser;
-
       await updateProfile(auth.currentUser, {
         displayName: login,
         photoURL: userImage,
       });
-
       const userUpdateProfile = await {
         userId: user.uid,
         login: user.displayName,
         userImage: user.photoURL,
       };
-
       dispatch(updateUserProfile(userUpdateProfile));
-      notification(`Пользователь ${login} успешно зарегистрирован`, 'success');
     } catch (error) {
-      notification(error);
+      console.log(error);
+      console.log(error.message);
     }
   };
 

@@ -55,44 +55,43 @@ export default function RegistrationScreen({ navigation }) {
   const handleSubmit = async () => {
     Keyboard.dismiss();
     // setLoading(true);
-    // const photoURL = await uploadPhotoToServer();
-    console.log(state);
-    dispatch(authSignUpUser({ ...state })); //, userImage: photoURL }));
-    setState(initialState);
+    const photoURL = await uploadPhotoToServer();
+    dispatch(authSignUpUser({ ...state, userImage: photoURL }));
+    // setState(initialState);
   };
 
-  // const uploadPhotoToServer = async () => {
-  //   const response = await fetch(userImage);
+  const uploadPhotoToServer = async () => {
+    const response = await fetch(userImage);
 
-  //   const file = await response.blob();
+    const file = await response.blob();
 
-  //   const uniquePostId = Date.now().toString();
+    const uniquePostId = Date.now().toString();
 
-  //   const storageRef = await ref(storage, `userImage/${uniquePostId}`);
+    const storageRef = await ref(storage, `userImage/${uniquePostId}`);
 
-  //   await uploadBytes(storageRef, file);
+    await uploadBytes(storageRef, file);
 
-  //   const processedPhoto = await getDownloadURL(storageRef);
+    const processedPhoto = await getDownloadURL(storageRef);
 
-  //   return processedPhoto;
-  // };
+    return processedPhoto;
+  };
 
-  // const pickImage = async () => {
-  //   if (!userImage) {
-  //     let result = await ImagePicker.launchImageLibraryAsync({
-  //       mediaTypes: ImagePicker.MediaTypeOptions.All,
-  //       allowsEditing: true,
-  //       aspect: [4, 4],
-  //       quality: 1,
-  //     });
+  const pickImage = async () => {
+    if (!userImage) {
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        allowsEditing: true,
+        aspect: [4, 4],
+        quality: 1,
+      });
 
-  //     if (!result.cancelled) {
-  //       setUserImage(result.uri);
-  //     }
-  //   } else {
-  //     setUserImage(null);
-  //   }
-  // };
+      if (!result.cancelled) {
+        setUserImage(result.uri);
+      }
+    } else {
+      setUserImage(null);
+    }
+  };
 
   return (
     <>
@@ -117,7 +116,7 @@ export default function RegistrationScreen({ navigation }) {
                       : [{ rotate: '0deg' }],
                   }}
                   activeOpacity={0.8}
-                  // onPress={pickImage}
+                  onPress={pickImage}
                 >
                   <AntDesign
                     name="pluscircleo"
