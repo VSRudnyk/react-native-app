@@ -1,14 +1,16 @@
 import { createStackNavigator } from '@react-navigation/stack';
-import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
+// import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { Ionicons } from '@expo/vector-icons';
+import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 import LoginScreen from './screen/auth/LoginScreen';
 import RegistrationScreen from './screen/auth/RegistrationScreen';
 import { PostScreen } from './screen/mainScreen/PostScreen';
 import { CreateScreen } from './screen/mainScreen/CreateScreen';
 import { ProfileScreen } from './screen/mainScreen/ProfileScreen';
-import { Ionicons, AntDesign } from '@expo/vector-icons';
 
 const AuthStack = createStackNavigator();
-const MainTab = createMaterialBottomTabNavigator();
+const MainTab = createBottomTabNavigator();
 
 export const useRoute = (isAuth) => {
   if (!isAuth) {
@@ -33,39 +35,45 @@ export const useRoute = (isAuth) => {
   }
   return (
     <MainTab.Navigator
-      labeled={false}
-      barStyle={{ backgroundColor: '#fff', height: 83 }}
-      activeColor="#FF6C00"
-      inactiveColor="#212121CC"
-    >
-      <MainTab.Screen
-        options={{
-          tabBarIcon: ({ focused, size, color }) => (
-            <Ionicons name="grid-outline" size={25} color={color} />
-          ),
-        }}
-        name="Posts"
-        component={PostScreen}
-      />
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ focused, size, color }) => {
+          let iconName;
+          let rn = route.name;
 
+          if (rn === 'Posts') {
+            iconName = focused ? 'grid' : 'grid-outline';
+          } else if (rn === 'Create') {
+            iconName = focused ? 'add' : 'add-outline';
+          } else if (rn === 'Profile') {
+            iconName = focused ? 'person' : 'person-outline';
+          }
+
+          return <Ionicons name={iconName} size={25} color={color} />;
+        },
+        tabBarActiveTintColor: '#FF6C00',
+        tabBarInactiveTintColor: '#212121CC',
+        tabBarShowLabel: false,
+        headerShown: false,
+        // tabBarActiveBackgroundColor: 'red',
+      })}
+    >
+      <MainTab.Screen name="Posts" component={PostScreen} />
       <MainTab.Screen
-        options={{
-          tabBarIcon: ({ focused, size, color }) => (
-            <Ionicons name="add" size={25} color={color} />
-          ),
-        }}
         name="Create"
         component={CreateScreen}
+        options={({ route }) => ({
+          tabBarStyle: { display: getRouteName(route) },
+        })}
       />
-      <MainTab.Screen
-        options={{
-          tabBarIcon: ({ focused, size, color }) => (
-            <AntDesign name="user" size={25} color={color} />
-          ),
-        }}
-        name="Profile"
-        component={ProfileScreen}
-      />
+      <MainTab.Screen name="Profile" component={ProfileScreen} />
     </MainTab.Navigator>
   );
+};
+
+const getRouteName = (route) => {
+  const routeName = getFocusedRouteNameFromRoute(route);
+  if (routeName?.includes('CameraScreen')) {
+    return 'none';
+  }
+  return 'flex';
 };

@@ -11,6 +11,7 @@ const NestedScreen = createStackNavigator();
 
 export const PostScreen = () => {
   const dispatch = useDispatch();
+
   return (
     <NestedScreen.Navigator
       screenOptions={{
@@ -33,11 +34,11 @@ export const PostScreen = () => {
             </TouchableOpacity>
           ),
         }}
-        name="DefaultScreen"
+        name="Публікації"
         component={DefaultScreenPosts}
       />
-      <NestedScreen.Screen name="Comments" component={CommentsScreen} />
-      <NestedScreen.Screen name="Map" component={MapScreen} />
+      <NestedScreen.Screen name="Коментарі" component={CommentsScreen} />
+      <NestedScreen.Screen name="Мапа" component={MapScreen} />
     </NestedScreen.Navigator>
   );
 };

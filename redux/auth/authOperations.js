@@ -1,16 +1,14 @@
 import {
-  getAuth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   updateProfile,
   onAuthStateChanged,
   signOut,
 } from 'firebase/auth';
-import { app } from '../../firebase/config';
+import { auth } from '../../firebase/config';
 import { authSlice } from './authReducer';
 import { notification } from '../../components/Notification';
 
-const auth = getAuth(app);
 const { updateUserProfile, authStateChange, authSignOut } = authSlice.actions;
 
 export const authSignUpUser =

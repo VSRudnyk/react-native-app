@@ -13,7 +13,7 @@ import { useSelector } from 'react-redux';
 import { collection, addDoc, doc, onSnapshot } from 'firebase/firestore';
 import { db } from '../../firebase/config';
 
-export const CommentsScreen = ({ route }) => {
+export const CommentsScreen = ({ route, navigation }) => {
   const { postId } = route.params;
   const [comment, setComment] = useState('');
   const [allComments, setAllComments] = useState([]);

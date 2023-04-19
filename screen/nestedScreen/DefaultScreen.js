@@ -15,9 +15,17 @@ import {
   query,
 } from 'firebase/firestore';
 import { EvilIcons } from '@expo/vector-icons';
+import { useIsFocused } from '@react-navigation/native';
 import { db } from '../../firebase/config';
 
-export const DefaultScreenPosts = ({ route, navigation }) => {
+export const DefaultScreenPosts = ({ navigation }) => {
+  const isFocused = useIsFocused();
+
+  useEffect(() => {
+    getAllPosts();
+    fetchAllComments();
+  }, []);
+
   const [posts, setPosts] = useState([]);
   const [allComments, setAllComments] = useState([]);
 
@@ -35,63 +43,58 @@ export const DefaultScreenPosts = ({ route, navigation }) => {
     setAllComments(querySnapshot.docs.map((doc) => ({ ...doc.data() })));
   };
 
-  console.log(allComments);
-
   const countComments = (postId) => {
     const number = allComments.filter((comment) => comment.postId === postId);
 
     return number.length;
   };
 
-  useEffect(() => {
-    getAllPosts();
-    fetchAllComments();
-  }, [allComments]);
-
   return (
     <View style={styles.container}>
-      <FlatList
-        data={posts}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item }) => (
-          <View style={styles.imageWrapper}>
-            <Image source={{ uri: item.photo }} style={styles.image} />
-            <View>
-              <Text style={styles.commentsText}>{item.comment}</Text>
+      {isFocused && (
+        <FlatList
+          data={posts}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({ item }) => (
+            <View style={styles.imageWrapper}>
+              <Image source={{ uri: item.photo }} style={styles.image} />
+              <View>
+                <Text style={styles.commentsText}>{item.comment}</Text>
+              </View>
+              <View style={styles.btnContainer}>
+                <TouchableOpacity
+                  activeOpacity={0.8}
+                  style={styles.commentsBtn}
+                  onPress={() =>
+                    navigation.navigate('Коментарі', { postId: item.id })
+                  }
+                >
+                  <View style={styles.commentContainer}>
+                    <EvilIcons name="comment" size={24} color="#BDBDBD" />
+                    <Text style={styles.commentText}>
+                      {countComments(item.id)}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  activeOpacity={0.8}
+                  style={styles.mapBtn}
+                  onPress={() =>
+                    navigation.navigate('Мапа', { location: item.location })
+                  }
+                >
+                  <View style={styles.locationContainer}>
+                    <EvilIcons name="location" size={24} color="#BDBDBD" />
+                    <Text
+                      style={styles.locationText}
+                    >{`${item.location.city}, ${item.location.country}`}</Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
             </View>
-            <View style={styles.btnContainer}>
-              <TouchableOpacity
-                activeOpacity={0.8}
-                style={styles.commentsBtn}
-                onPress={() =>
-                  navigation.navigate('Comments', { postId: item.id })
-                }
-              >
-                <View style={styles.commentContainer}>
-                  <EvilIcons name="comment" size={24} color="#BDBDBD" />
-                  <Text style={styles.commentText}>
-                    {countComments(item.id)}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-              <TouchableOpacity
-                activeOpacity={0.8}
-                style={styles.mapBtn}
-                onPress={() =>
-                  navigation.navigate('Map', { location: item.location })
-                }
-              >
-                <View style={styles.locationContainer}>
-                  <EvilIcons name="location" size={24} color="#BDBDBD" />
-                  <Text
-                    style={styles.locationText}
-                  >{`${item.location.city}, ${item.location.country}`}</Text>
-                </View>
-              </TouchableOpacity>
-            </View>
-          </View>
-        )}
-      />
+          )}
+        />
+      )}
     </View>
   );
 };
