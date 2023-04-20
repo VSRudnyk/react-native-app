@@ -15,6 +15,7 @@ import { collection, addDoc } from 'firebase/firestore';
 import { FontAwesome } from '@expo/vector-icons';
 import { storage } from '../../firebase/config';
 import { db } from '../../firebase/config';
+import { notification } from '../../components/Notification';
 
 export const DeffultCameraScreen = ({ route, navigation }) => {
   const [hasCameraPermission, setHasCameraPermission] = useState(null);
@@ -39,7 +40,7 @@ export const DeffultCameraScreen = ({ route, navigation }) => {
       let location = await Location.getCurrentPositionAsync({});
       let address = await Location.reverseGeocodeAsync(location.coords);
 
-      setLocation({
+      await setLocation({
         latitude: location.coords.latitude,
         longitude: location.coords.longitude,
         country: address[0].country,
@@ -71,43 +72,59 @@ export const DeffultCameraScreen = ({ route, navigation }) => {
   };
 
   const uploadPhotoToServer = async () => {
-    const response = await fetch(photo);
-
-    const file = await response.blob();
-
-    const uniquePostId = Date.now().toString();
-
-    const storageRef = await ref(storage, `images/${uniquePostId}`);
-
-    await uploadBytes(storageRef, file);
-
-    const processedPhoto = await getDownloadURL(storageRef);
-    return processedPhoto;
+    try {
+      const response = await fetch(photo);
+      const file = await response.blob();
+      const uniquePostId = Date.now().toString();
+      const storageRef = await ref(storage, `images/${uniquePostId}`);
+      await uploadBytes(storageRef, file);
+      const processedPhoto = await getDownloadURL(storageRef);
+      return processedPhoto;
+    } catch (error) {
+      notification(error.message.toString(), 'warning');
+    }
   };
 
   return (
     <View style={styles.container}>
-      {!photo ? (
-        <View style={styles.takePhotoContainer}>
-          <TouchableOpacity
-            onPress={() => navigation.navigate('CameraScreen')}
-            style={styles.takePhotoBtn}
-          >
-            <FontAwesome name="camera" size={24} color="#BDBDBD" />
-          </TouchableOpacity>
-        </View>
-      ) : (
-        <View style={styles.takePhotoContainer}>
-          <Image source={{ uri: photo }} style={styles.photo} />
-        </View>
-      )}
+      <View style={styles.createPublication}>
+        {!photo ? (
+          <View style={styles.takePhotoContainer}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('CameraScreen')}
+              style={styles.takePhotoBtn}
+            >
+              <FontAwesome name="camera" size={24} color="#BDBDBD" />
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <View style={styles.takePhotoContainer}>
+            <Image source={{ uri: photo }} style={styles.photo} />
+          </View>
+        )}
 
-      <View style={styles.inputContainer}>
-        <TextInput style={styles.input} onChangeText={setComment} />
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.input}
+            onChangeText={setComment}
+            placeholder="Назва..."
+            placeholderTextColor={'#BDBDBD'}
+          />
+        </View>
+        <TouchableOpacity
+          onPress={sendPhoto}
+          style={{
+            ...styles.sendBtn,
+            backgroundColor: photo ? '#FF6C00' : '#F6F6F6',
+          }}
+        >
+          <Text
+            style={{ ...styles.sendText, color: photo ? '#fff' : '#BDBDBD' }}
+          >
+            Опублікувати
+          </Text>
+        </TouchableOpacity>
       </View>
-      <TouchableOpacity onPress={sendPhoto} style={styles.sendBtn}>
-        <Text style={styles.sendText}>Send</Text>
-      </TouchableOpacity>
     </View>
   );
 };
@@ -117,13 +134,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
+  createPublication: {
+    marginHorizontal: 16,
+  },
   sendBtn: {
-    marginHorizontal: 30,
-    height: 40,
-    borderWidth: 2,
-    borderColor: '#20b2aa',
-    borderRadius: 10,
-    marginTop: 20,
+    height: 50,
+    borderRadius: 100,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -131,13 +147,13 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
   sendText: {
-    color: '#20b2aa',
-    fontSize: 20,
+    fontSize: 16,
+    fontFamily: 'Roboto-Regular',
   },
   takePhotoContainer: {
     height: 240,
     marginTop: 32,
-    marginHorizontal: 16,
+    marginBottom: 32,
     backgroundColor: '#F6F6F6',
     borderRadius: 10,
     borderColor: '#E8E8E8',
@@ -158,12 +174,14 @@ const styles = StyleSheet.create({
     height: '100%',
     width: '100%',
   },
-  inputContainer: {
-    marginHorizontal: 10,
-  },
+  inputContainer: {},
   input: {
     height: 50,
     borderBottomWidth: 1,
-    borderBottomColor: '#20b2aa',
+    borderBottomColor: '#E8E8E8',
+    fontFamily: 'Roboto-Regular',
+    fontSize: 16,
+    color: '#212121',
+    marginBottom: 32,
   },
 });
