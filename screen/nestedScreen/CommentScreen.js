@@ -32,6 +32,7 @@ export const CommentsScreen = ({ route, navigation }) => {
       userImage,
       postId,
     });
+    setComment('');
   };
 
   const getCommentById = async () => {
@@ -64,7 +65,13 @@ export const CommentsScreen = ({ route, navigation }) => {
       </SafeAreaView>
       <View>
         <View style={styles.inputContainer}>
-          <TextInput style={styles.input} onChangeText={setComment} />
+          <TextInput
+            style={styles.input}
+            placeholder={'Додати коментар'}
+            placeholderTextColor={'#BDBDBD'}
+            value={comment}
+            onChangeText={(value) => setComment(value)}
+          />
         </View>
         <TouchableOpacity onPress={createPost} style={styles.sendBtn}>
           <Text style={styles.sendText}>Add post</Text>
@@ -90,20 +97,23 @@ const styles = StyleSheet.create({
     marginHorizontal: 30,
     height: 40,
     borderWidth: 2,
-    borderColor: '#20b2aa',
+    borderColor: '#FF6C00',
     borderRadius: 10,
     marginTop: 20,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 30,
   },
+  sendText: {
+    fontSize: 16,
+    fontFamily: 'Roboto-Medium',
+  },
   inputContainer: {
     marginHorizontal: 10,
     marginBottom: 20,
   },
   input: {
-    height: 50,
     borderBottomWidth: 1,
-    borderBottomColor: '#20b2aa',
+    borderBottomColor: '#FF6C00',
   },
 });

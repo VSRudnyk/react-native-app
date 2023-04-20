@@ -12,7 +12,7 @@ import { notification } from '../../components/Notification';
 const { updateUserProfile, authStateChange, authSignOut } = authSlice.actions;
 
 export const authSignUpUser =
-  ({ email, password, login, userImage }) =>
+  ({ email, password, login, userImage }, setLoading) =>
   async (dispatch, getSatte) => {
     try {
       await createUserWithEmailAndPassword(auth, email, password);
@@ -27,21 +27,22 @@ export const authSignUpUser =
         userImage: user.photoURL,
       };
       dispatch(updateUserProfile(userUpdateProfile));
+      notification(`user ${login} registered successfully`, 'success');
     } catch (error) {
-      console.log(error);
-      console.log(error.message);
+      setLoading(false);
+      notification(error.message.toString(), 'warning');
     }
   };
 
 export const authSignInUser =
-  ({ email, password }) =>
+  ({ email, password, login }) =>
   async (dispatch, getSatte) => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
       const user = await auth.currentUser;
+      notification(`user ${login} login successfully`, 'success');
     } catch (error) {
-      console.log(error);
-      console.log(error.message);
+      notification(error.message.toString(), 'warning');
     }
   };
 

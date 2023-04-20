@@ -30,18 +30,20 @@ const initialState = {
 export default function RegistrationScreen({ navigation }) {
   const dispatch = useDispatch();
 
+  const defaultUserPhoto =
+    'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460__340.png';
+
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [state, setState] = useState(initialState);
   const [loading, setLoading] = useState(false);
   const [dimensions, setdimensions] = useState(
     Dimensions.get('window').width - 20 * 2
   );
-  const [userImage, setUserImage] = useState(null);
+  const [userImage, setUserImage] = useState(defaultUserPhoto);
 
   useEffect(() => {
     const onChange = () => {
       const width = Dimensions.get('window').width - 20 * 2;
-
       setdimensions(width);
     };
     Dimensions.addEventListener('change', onChange);
@@ -54,42 +56,34 @@ export default function RegistrationScreen({ navigation }) {
 
   const handleSubmit = async () => {
     Keyboard.dismiss();
-    // setLoading(true);
+    setLoading(true);
     const photoURL = await uploadPhotoToServer();
-    dispatch(authSignUpUser({ ...state, userImage: photoURL }));
-    // setState(initialState);
+    dispatch(authSignUpUser({ ...state, userImage: photoURL }, setLoading));
+    setState(initialState);
   };
 
   const uploadPhotoToServer = async () => {
     const response = await fetch(userImage);
-
     const file = await response.blob();
-
     const uniquePostId = Date.now().toString();
-
     const storageRef = await ref(storage, `userImage/${uniquePostId}`);
-
     await uploadBytes(storageRef, file);
-
     const processedPhoto = await getDownloadURL(storageRef);
-
     return processedPhoto;
   };
 
   const pickImage = async () => {
-    if (!userImage) {
-      let result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.All,
-        allowsEditing: true,
-        aspect: [4, 4],
-        quality: 1,
-      });
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 4],
+      quality: 1,
+    });
 
-      if (!result.cancelled) {
-        setUserImage(result.uri);
-      }
+    if (!result.cancelled) {
+      setUserImage(result.uri);
     } else {
-      setUserImage(null);
+      setUserImage(userImage);
     }
   };
 
@@ -108,28 +102,12 @@ export default function RegistrationScreen({ navigation }) {
               }}
             >
               <View style={styles.photoContainer}>
-                <TouchableOpacity
-                  style={{
-                    ...styles.addPhoto,
-                    transform: userImage
-                      ? [{ rotate: '45deg' }]
-                      : [{ rotate: '0deg' }],
-                  }}
-                  activeOpacity={0.8}
-                  onPress={pickImage}
-                >
-                  <AntDesign
-                    name="pluscircleo"
-                    size={25}
-                    color={userImage ? '#BDBDBD' : '#FF6C00'}
-                  />
-                </TouchableOpacity>
-                {userImage && (
+                <TouchableOpacity activeOpacity={0.8} onPress={pickImage}>
                   <Image
                     source={{ uri: userImage }}
                     style={{ width: 120, height: 120, borderRadius: 16 }}
                   />
-                )}
+                </TouchableOpacity>
               </View>
               <Text style={styles.registerTitle}>Регистрация</Text>
               <View style={styles.formContainer}>
@@ -210,12 +188,6 @@ const styles = StyleSheet.create({
     height: 120,
     backgroundColor: '#F6F6F6',
     borderRadius: 16,
-  },
-  addPhoto: {
-    position: 'absolute',
-    bottom: 14,
-    right: -12,
-    zIndex: 999,
   },
   input: {
     borderWidth: 1,
