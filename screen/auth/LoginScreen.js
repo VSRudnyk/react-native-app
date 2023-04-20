@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
     fontSize: 30,
     color: '#212121',
     textAlign: 'center',
-    marginTop: 92,
+    marginTop: 32,
     marginBottom: 32,
     fontFamily: 'Roboto-Bold',
   },

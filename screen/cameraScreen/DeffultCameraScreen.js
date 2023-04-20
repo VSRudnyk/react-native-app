@@ -48,7 +48,7 @@ export const DeffultCameraScreen = ({ route, navigation }) => {
       });
 
       const cameraStatus = await Camera.requestCameraPermissionsAsync();
-      // setHasCameraPermission(cameraStatus.status === 'granted');
+      setHasCameraPermission(cameraStatus.status === 'granted');
     })();
   }, []);
 

@@ -66,12 +66,25 @@ export const DefaultScreenPosts = ({ navigation }) => {
                   activeOpacity={0.8}
                   style={styles.commentsBtn}
                   onPress={() =>
-                    navigation.navigate('Коментарі', { postId: item.id })
+                    navigation.navigate('Коментарі', {
+                      postId: item.id,
+                      photo: item.photo,
+                    })
                   }
                 >
                   <View style={styles.commentContainer}>
-                    <EvilIcons name="comment" size={24} color="#BDBDBD" />
-                    <Text style={styles.commentText}>
+                    <EvilIcons
+                      name="comment"
+                      size={24}
+                      color={countComments(item.id) > 0 ? '#FF6C00' : '#BDBDBD'}
+                    />
+                    <Text
+                      style={{
+                        ...styles.commentText,
+                        color:
+                          countComments(item.id) > 0 ? '#212121' : '#BDBDBD',
+                      }}
+                    >
                       {countComments(item.id)}
                     </Text>
                   </View>
@@ -143,8 +156,9 @@ const styles = StyleSheet.create({
     marginTop: 11,
   },
   commentText: {
-    color: '#212121',
-    fontFamily: 'Roboto-Medium',
+    color: '#BDBDBD',
+    fontFamily: 'Roboto-Regular',
+    fontSize: 16,
     marginLeft: 6,
   },
 });

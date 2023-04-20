@@ -5,32 +5,37 @@ import {
   StyleSheet,
   TouchableOpacity,
   FlatList,
-  SafeAreaView,
   Image,
 } from 'react-native';
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { collection, addDoc, doc, onSnapshot } from 'firebase/firestore';
+import { AntDesign } from '@expo/vector-icons';
 import { db } from '../../firebase/config';
+import { currentDate } from '../../function/currentDate';
 
 export const CommentsScreen = ({ route, navigation }) => {
-  const { postId } = route.params;
-  const [comment, setComment] = useState('');
+  const { postId, photo } = route.params;
+  const [comment, setComment] = useState(null);
   const [allComments, setAllComments] = useState([]);
-  const { login, userImage } = useSelector((state) => state.auth);
+  const { login, userImage, userId } = useSelector((state) => state.auth);
 
   useEffect(() => {
     getCommentById();
   }, []);
 
   const createPost = async () => {
+    const date = currentDate();
     const docId = doc(db, 'posts', `${postId}`);
     const commentCollection = collection(docId, 'comment');
+
     await addDoc(commentCollection, {
       comment,
       login,
       userImage,
+      userId,
       postId,
+      date,
     });
     setComment('');
   };
@@ -47,34 +52,46 @@ export const CommentsScreen = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
-      <SafeAreaView>
-        <FlatList
-          data={allComments}
-          renderItem={({ item }) => (
-            <View style={styles.commentContainer}>
-              <Image
-                source={{ uri: item.userImage }}
-                style={{ width: 60, height: 60, borderRadius: 10 }}
-              />
-              <Text>{item.login}</Text>
-              <Text>{item.comment}</Text>
+      <Image source={{ uri: photo }} style={styles.image} />
+      <FlatList
+        data={allComments}
+        renderItem={({ item }) => (
+          <View
+            style={{
+              ...styles.commentContainer,
+              flexDirection: userId === item.userId ? 'row' : 'row-reverse',
+            }}
+          >
+            <Image
+              source={{ uri: item.userImage }}
+              style={{
+                ...styles.userImage,
+                marginRight: userId === item.userId ? 16 : 0,
+                marginLeft: userId === item.userId ? 0 : 16,
+              }}
+            />
+            <View style={styles.textCommentContainer}>
+              <Text style={styles.textComment}>{item.comment}</Text>
+              <Text style={styles.date}>{item.date}</Text>
             </View>
-          )}
-          keyExtractor={(item) => item.id}
+          </View>
+        )}
+        keyExtractor={(item) => item.id}
+      />
+      <View style={styles.addCommentContainer}>
+        <TextInput
+          style={styles.input}
+          placeholder={'Коментувати...'}
+          placeholderTextColor={'#BDBDBD'}
+          value={comment}
+          onChangeText={(value) => setComment(value)}
         />
-      </SafeAreaView>
-      <View>
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder={'Додати коментар'}
-            placeholderTextColor={'#BDBDBD'}
-            value={comment}
-            onChangeText={(value) => setComment(value)}
-          />
-        </View>
-        <TouchableOpacity onPress={createPost} style={styles.sendBtn}>
-          <Text style={styles.sendText}>Add post</Text>
+        <TouchableOpacity
+          onPress={createPost}
+          style={styles.sendBtn}
+          disabled={!comment}
+        >
+          <AntDesign name="arrowup" size={24} color="#fff" />
         </TouchableOpacity>
       </View>
     </View>
@@ -84,36 +101,66 @@ export const CommentsScreen = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'space-between',
+    marginHorizontal: 10,
+  },
+  image: {
+    minWidth: 100,
+    height: 240,
+    marginTop: 32,
+    marginBottom: 32,
+    borderRadius: 8,
   },
   commentContainer: {
-    borderWidth: 1,
-    borderColor: '#20b2aa',
-    marginHorizontal: 10,
-    padding: 10,
-    marginBottom: 10,
+    marginBottom: 24,
   },
-  sendBtn: {
-    marginHorizontal: 30,
-    height: 40,
-    borderWidth: 2,
-    borderColor: '#FF6C00',
-    borderRadius: 10,
-    marginTop: 20,
+  userImage: {
+    width: 28,
+    height: 28,
+    borderRadius: 100,
+  },
+  textCommentContainer: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.03)',
+    padding: 16,
+    borderBottomLeftRadius: 6,
+    borderBottomEndRadius: 6,
+    borderTopRightRadius: 6,
+  },
+  textComment: {
+    fontSize: 13,
+    fontFamily: 'Roboto-Regular',
+    paddingBottom: 8,
+  },
+  date: {
+    fontSize: 10,
+    fontFamily: 'Roboto-Regular',
+    color: '#BDBDBD',
+    textAlign: 'right',
+  },
+  addCommentContainer: {
+    flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 30,
+    marginTop: 32,
+    marginBottom: 16,
   },
-  sendText: {
-    fontSize: 16,
-    fontFamily: 'Roboto-Medium',
-  },
-  inputContainer: {
-    marginHorizontal: 10,
-    marginBottom: 20,
+  sendBtn: {
+    height: 34,
+    width: 34,
+    backgroundColor: '#FF6C00',
+    borderRadius: 100,
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
+    right: 8,
   },
   input: {
-    borderBottomWidth: 1,
-    borderBottomColor: '#FF6C00',
+    flex: 1,
+    borderRadius: 100,
+    height: 50,
+    backgroundColor: '#E8E8E8',
+    paddingLeft: 16,
+    fontSize: 16,
+    fontFamily: 'Roboto-Medium',
   },
 });
