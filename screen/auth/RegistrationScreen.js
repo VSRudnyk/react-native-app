@@ -198,7 +198,7 @@ const styles = StyleSheet.create({
     color: '#212121',
     padding: 16,
     marginBottom: 16,
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Roboto-Regular',
   },
   registerTitle: {
     fontSize: 30,
@@ -225,19 +225,11 @@ const styles = StyleSheet.create({
   registerBtnText: {
     fontSize: 16,
     color: '#fff',
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Roboto-Regular',
   },
   loginBtnText: {
     fontSize: 16,
     color: '#1B4371',
-    fontFamily: 'Roboto-Medium',
-  },
-  linkText: {
-    fontSize: 16,
-    color: '#1B4371',
-    textAlign: 'center',
-    marginTop: 16,
-    marginBottom: 80,
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Roboto-Regular',
   },
 });

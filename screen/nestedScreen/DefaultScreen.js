@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
   },
   locationText: {
     color: '#212121',
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Roboto-Regular',
     marginLeft: 8,
     textDecorationLine: 'underline',
   },

@@ -13,6 +13,7 @@ import * as Location from 'expo-location';
 import { uploadBytes, ref, getDownloadURL } from 'firebase/storage';
 import { collection, addDoc } from 'firebase/firestore';
 import { FontAwesome } from '@expo/vector-icons';
+import { useIsFocused } from '@react-navigation/native';
 import { storage } from '../../firebase/config';
 import { db } from '../../firebase/config';
 import { notification } from '../../function/appNotification';
@@ -22,6 +23,7 @@ export const DeffultCameraScreen = ({ route, navigation }) => {
   const [photo, setPhoto] = useState(null);
   const [location, setLocation] = useState('');
   const [comment, setComment] = useState('');
+  const isFocused = useIsFocused();
 
   useEffect(() => {
     if (route.params) {
@@ -35,7 +37,8 @@ export const DeffultCameraScreen = ({ route, navigation }) => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
-        console.log('Permission to access location was denied');
+        notification('Permission to access location was denied', 'warning');
+        return;
       }
       let location = await Location.getCurrentPositionAsync({});
       let address = await Location.reverseGeocodeAsync(location.coords);
@@ -51,7 +54,7 @@ export const DeffultCameraScreen = ({ route, navigation }) => {
       const cameraStatus = await Camera.requestCameraPermissionsAsync();
       setHasCameraPermission(cameraStatus.status === 'granted');
     })();
-  }, []);
+  }, [isFocused]);
 
   const sendPhoto = () => {
     navigation.navigate('Публікації');
@@ -111,9 +114,7 @@ export const DeffultCameraScreen = ({ route, navigation }) => {
             placeholderTextColor={'#BDBDBD'}
           />
           <Text style={styles.input}>
-            {location
-              ? `${location.city}, ${location.country}`
-              : 'Місцевість...'}
+            {location && `${location.city}, ${location.country}`}
           </Text>
         </View>
 

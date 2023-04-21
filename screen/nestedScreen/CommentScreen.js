@@ -122,9 +122,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.03)',
     padding: 16,
-    borderBottomLeftRadius: 6,
-    borderBottomEndRadius: 6,
-    borderTopRightRadius: 6,
+    borderRadius: 6,
   },
   textComment: {
     fontSize: 13,
