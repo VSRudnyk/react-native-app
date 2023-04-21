@@ -1,7 +1,7 @@
 export const currentDate = () => {
   const date = new Date();
   const year = date.getFullYear();
-  const month = date.getMonth() - 1;
+  const month = date.getMonth();
   let day = date.getDate();
   let hour = date.getHours();
   let minutes = date.getMinutes();

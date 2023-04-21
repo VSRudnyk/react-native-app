@@ -7,7 +7,7 @@ import {
 } from 'firebase/auth';
 import { auth } from '../../firebase/config';
 import { authSlice } from './authReducer';
-import { notification } from '../../components/Notification';
+import { notification } from '../../function/appNotification';
 
 const { updateUserProfile, authStateChange, authSignOut } = authSlice.actions;
 
@@ -27,7 +27,7 @@ export const authSignUpUser =
         userImage: user.photoURL,
       };
       dispatch(updateUserProfile(userUpdateProfile));
-      notification(`user ${login} registered successfully`, 'success');
+      notification(`User ${login} registered successfully`, 'success');
     } catch (error) {
       setLoading(false);
       notification(error.message.toString(), 'warning');
@@ -35,12 +35,11 @@ export const authSignUpUser =
   };
 
 export const authSignInUser =
-  ({ email, password, login }) =>
+  ({ email, password }) =>
   async (dispatch, getSatte) => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
       const user = await auth.currentUser;
-      notification(`user ${login} login successfully`, 'success');
     } catch (error) {
       notification(error.message.toString(), 'warning');
     }

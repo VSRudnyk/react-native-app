@@ -15,12 +15,12 @@ import { collection, addDoc } from 'firebase/firestore';
 import { FontAwesome } from '@expo/vector-icons';
 import { storage } from '../../firebase/config';
 import { db } from '../../firebase/config';
-import { notification } from '../../components/Notification';
+import { notification } from '../../function/appNotification';
 
 export const DeffultCameraScreen = ({ route, navigation }) => {
   const [hasCameraPermission, setHasCameraPermission] = useState(null);
   const [photo, setPhoto] = useState(null);
-  const [location, setLocation] = useState(null);
+  const [location, setLocation] = useState('');
   const [comment, setComment] = useState('');
 
   useEffect(() => {
@@ -102,21 +102,28 @@ export const DeffultCameraScreen = ({ route, navigation }) => {
             <Image source={{ uri: photo }} style={styles.photo} />
           </View>
         )}
-
         <View style={styles.inputContainer}>
           <TextInput
             style={styles.input}
-            onChangeText={setComment}
+            value={comment}
+            onChangeText={(value) => setComment(value)}
             placeholder="Назва..."
             placeholderTextColor={'#BDBDBD'}
           />
+          <Text style={styles.input}>
+            {location
+              ? `${location.city}, ${location.country}`
+              : 'Місцевість...'}
+          </Text>
         </View>
+
         <TouchableOpacity
           onPress={sendPhoto}
           style={{
             ...styles.sendBtn,
             backgroundColor: photo ? '#FF6C00' : '#F6F6F6',
           }}
+          disabled={photo === null || location === ''}
         >
           <Text
             style={{ ...styles.sendText, color: photo ? '#fff' : '#BDBDBD' }}
@@ -142,6 +149,7 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     justifyContent: 'center',
     alignItems: 'center',
+    marginTop: 32,
   },
   snapText: {
     color: '#fff',
@@ -182,6 +190,11 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto-Regular',
     fontSize: 16,
     color: '#212121',
-    marginBottom: 32,
+
+    paddingBottom: 8,
+    textAlignVertical: 'bottom',
+  },
+  'input: :not(last-child)': {
+    marginBottom: 16,
   },
 });
