@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "react-native-hw",
+    "name": "WanderSnap",
     "slug": "react-native-hw",
     "version": "1.0.0",
     "orientation": "default",
@@ -24,7 +24,12 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "com.vsrudnyk.reactnativehw"
+      "package": "com.vsrudnyk.reactnativehw",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyAnbxoAKsWUXxiPkbce-7ZeaIKuycXKdXs"
+        }
+      }
     },
     "web": {
       "favicon": "./assets/favicon.png"
