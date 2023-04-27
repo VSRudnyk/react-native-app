@@ -14,8 +14,9 @@ import { collection, query, where, onSnapshot } from 'firebase/firestore';
 import { MaterialIcons } from '@expo/vector-icons';
 import { authSignOutUser } from '../../redux/auth/authOperations';
 import { db } from '../../firebase/config';
+import { Post } from '../../components/Post';
 
-export const ProfileScreen = () => {
+export const ProfileScreen = ({ navigation }) => {
   const dispatch = useDispatch();
   const [userPosts, setUserPosts] = useState([]);
   const { userId, userImage, login } = useSelector((state) => state.auth);
@@ -30,7 +31,7 @@ export const ProfileScreen = () => {
     const queryPosts = await query(postsRef, where('userId', '==', userId));
 
     await onSnapshot(queryPosts, (snapshot) => {
-      setUserPosts(snapshot.docs.map((doc) => doc.data()));
+      setUserPosts(snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
     });
   };
 
@@ -55,17 +56,7 @@ export const ProfileScreen = () => {
           <Image source={{ uri: userImage }} style={styles.userImage} />
         </View>
         <Text style={styles.userName}>{login}</Text>
-        {isFocused && (
-          <FlatList
-            data={userPosts}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={({ item }) => (
-              <View style={styles.imageWrapper}>
-                <Image source={{ uri: item.photoURL }} style={styles.image} />
-              </View>
-            )}
-          />
-        )}
+        <Post posts={userPosts} navigation={navigation} />
       </View>
     </ImageBackground>
   );

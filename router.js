@@ -1,8 +1,7 @@
 import { createStackNavigator } from '@react-navigation/stack';
-// import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
-import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
+// import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 import LoginScreen from './screen/auth/LoginScreen';
 import RegistrationScreen from './screen/auth/RegistrationScreen';
 import { PostScreen } from './screen/mainScreen/PostScreen';
