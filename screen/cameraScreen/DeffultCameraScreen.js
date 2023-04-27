@@ -8,7 +8,6 @@ import {
   TextInput,
 } from 'react-native';
 import { useSelector } from 'react-redux';
-// import { Camera } from 'expo-camera';
 import * as Location from 'expo-location';
 import { uploadBytes, ref, getDownloadURL } from 'firebase/storage';
 import { collection, addDoc } from 'firebase/firestore';
@@ -19,7 +18,6 @@ import { db } from '../../firebase/config';
 import { notification } from '../../function/appNotification';
 
 export const DeffultCameraScreen = ({ route, navigation }) => {
-  // const [hasCameraPermission, setHasCameraPermission] = useState(null);
   const [photo, setPhoto] = useState(null);
   const [location, setLocation] = useState('');
   const [comment, setComment] = useState('');
@@ -51,9 +49,6 @@ export const DeffultCameraScreen = ({ route, navigation }) => {
         city: city,
         subregion: subregion,
       });
-
-      // const cameraStatus = await Camera.requestCameraPermissionsAsync();
-      // setHasCameraPermission(cameraStatus.status === 'granted');
     })();
   }, [isFocused]);
 

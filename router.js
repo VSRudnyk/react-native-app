@@ -1,7 +1,6 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
-// import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 import LoginScreen from './screen/auth/LoginScreen';
 import RegistrationScreen from './screen/auth/RegistrationScreen';
 import { PostScreen } from './screen/mainScreen/PostScreen';
@@ -34,6 +33,7 @@ export const useRoute = (isAuth) => {
   }
   return (
     <MainTab.Navigator
+      backBehavior="firstRoute"
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, size, color }) => {
           let iconName;
@@ -53,7 +53,7 @@ export const useRoute = (isAuth) => {
         tabBarInactiveTintColor: '#212121CC',
         tabBarShowLabel: false,
         headerShown: false,
-        // tabBarStyle: { display: 'none' }, // Скрыть нижний tabBar
+        tabBarStyle: { display: route.name === 'Create' ? 'none' : 'flex' }, // Скрыть нижний tabBar
       })}
     >
       <MainTab.Screen name="Posts" component={PostScreen} />

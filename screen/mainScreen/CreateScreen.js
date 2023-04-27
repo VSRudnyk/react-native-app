@@ -22,7 +22,7 @@ export const CreateScreen = () => {
       <NestedScreen.Screen
         name="CameraScreen"
         component={CameraScreen}
-        // options={{ headerShown: false }} // Скрыть Header
+        options={{ headerShown: false }} // Скрыть Header
       />
     </NestedScreen.Navigator>
   );

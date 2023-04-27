@@ -8,6 +8,8 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { Camera } from 'expo-camera';
+import { notification } from '../../function/appNotification';
+import * as ScreenOrientation from 'expo-screen-orientation';
 
 export const CameraScreen = ({ navigation }) => {
   const [hasCameraPermission, setHasCameraPermission] = useState(null);
@@ -18,6 +20,7 @@ export const CameraScreen = ({ navigation }) => {
   const { height, width } = Dimensions.get('window');
   const screenRatio = height / width;
   const [isRatioSet, setIsRatioSet] = useState(false);
+  const [orientation, setOrientation] = useState(1);
 
   useEffect(() => {
     async function getCameraStatus() {
@@ -25,7 +28,19 @@ export const CameraScreen = ({ navigation }) => {
       setHasCameraPermission(status == 'granted');
     }
     getCameraStatus();
+    ScreenOrientation.addOrientationChangeListener(getCurrentOrientation);
   }, []);
+
+  useEffect(() => {
+    return () => {
+      ScreenOrientation.removeOrientationChangeListener(getCurrentOrientation);
+    };
+  });
+
+  const getCurrentOrientation = async () => {
+    const initOrientation = await ScreenOrientation.getOrientationAsync();
+    setOrientation(initOrientation);
+  };
 
   const prepareRatio = async () => {
     let desiredRatio = '4:3';
@@ -64,6 +79,10 @@ export const CameraScreen = ({ navigation }) => {
     }
   };
 
+  const getCurrentOrientationAsync = async () => {
+    return await ScreenOrientation.getOrientationAsync();
+  };
+
   const takePhoto = async () => {
     if (camera) {
       const NewPhoto = await camera.takePictureAsync(null);
@@ -74,25 +93,22 @@ export const CameraScreen = ({ navigation }) => {
     }
   };
 
-  if (hasCameraPermission === null) {
-    return (
-      <View style={styles.information}>
-        <Text>Waiting for camera permissions</Text>
-      </View>
-    );
-  } else if (hasCameraPermission === false) {
-    return (
-      <View style={styles.information}>
-        <Text>No access to camera</Text>
-      </View>
-    );
+  if (hasCameraPermission === false) {
+    notification('No access to camera', 'warning');
   } else {
     return (
       <View style={styles.container}>
         <Camera
           style={[
             styles.cameraPreview,
-            { marginTop: imagePadding, marginBottom: imagePadding },
+            {
+              marginTop: orientation === 1 ? 100 : 0,
+              marginBottom: orientation === 1 ? 100 : 0,
+              marginLeft: orientation === 4 ? 50 : 0,
+              marginRight: orientation === 4 ? 70 : 0,
+              justifyContent: orientation === 1 ? 'flex-end' : 'center',
+              alignItems: orientation === 1 ? 'center' : 'flex-end',
+            },
           ]}
           onCameraReady={setCameraReady}
           ratio={ratio}
@@ -100,7 +116,14 @@ export const CameraScreen = ({ navigation }) => {
             setCamera(ref);
           }}
         >
-          <TouchableOpacity onPress={takePhoto} style={styles.button}>
+          <TouchableOpacity
+            onPress={takePhoto}
+            style={{
+              ...styles.button,
+              marginBottom: orientation === 1 ? 20 : 0,
+              marginRight: orientation === 4 ? 20 : 0,
+            }}
+          >
             <Text style={styles.snapText}>Snap</Text>
           </TouchableOpacity>
         </Camera>
@@ -110,12 +133,6 @@ export const CameraScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  information: {
-    flex: 1,
-    justifyContent: 'center',
-    alignContent: 'center',
-    alignItems: 'center',
-  },
   container: {
     flex: 1,
     backgroundColor: '#000',
@@ -126,12 +143,16 @@ const styles = StyleSheet.create({
   },
   button: {
     borderRadius: 50,
-    borderWidth: 1,
-    borderColor: 'red',
+    borderWidth: 4,
+    borderColor: '#FF6C00',
     height: 80,
     width: 80,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 20,
+  },
+  snapText: {
+    color: '#FF6C00',
+    fontFamily: 'Roboto-Bold',
+    fontSize: 16,
   },
 });

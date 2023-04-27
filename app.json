@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "WanderSnap",
+    "name": "Wander Snap",
     "slug": "react-native-hw",
     "version": "1.0.0",
     "orientation": "default",
@@ -21,8 +21,8 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/icon.png",
-        "backgroundColor": "#FFFFFF"
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FF6C00"
       },
       "package": "com.vsrudnyk.reactnativehw",
       "config": {
