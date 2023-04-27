@@ -13,7 +13,6 @@ import {
   Image,
 } from 'react-native';
 import { useDispatch } from 'react-redux';
-import { AntDesign } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { uploadBytes, ref, getDownloadURL } from 'firebase/storage';
 import { storage } from '../../firebase/config';
@@ -77,7 +76,7 @@ export default function RegistrationScreen({ navigation }) {
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
       aspect: [4, 4],
-      quality: 1,
+      quality: 0.5,
     });
 
     if (!result.cancelled) {

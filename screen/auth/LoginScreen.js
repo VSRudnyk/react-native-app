@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   StyleSheet,
   Text,
@@ -48,7 +48,7 @@ export default function LoginScreen({ navigation }) {
   const handleSubmit = () => {
     Keyboard.dismiss();
     setLoading(true);
-    dispatch(authSignInUser(state));
+    dispatch(authSignInUser(state, setLoading));
     setState(initialState);
   };
 

@@ -54,26 +54,12 @@ export const useRoute = (isAuth) => {
         tabBarInactiveTintColor: '#212121CC',
         tabBarShowLabel: false,
         headerShown: false,
-        // tabBarActiveBackgroundColor: 'red',
+        // tabBarStyle: { display: 'none' }, // Скрыть нижний tabBar
       })}
     >
       <MainTab.Screen name="Posts" component={PostScreen} />
-      <MainTab.Screen
-        name="Create"
-        component={CreateScreen}
-        options={({ route }) => ({
-          tabBarStyle: { display: getRouteName(route) },
-        })}
-      />
+      <MainTab.Screen name="Create" component={CreateScreen} />
       <MainTab.Screen name="Profile" component={ProfileScreen} />
     </MainTab.Navigator>
   );
-};
-
-const getRouteName = (route) => {
-  const routeName = getFocusedRouteNameFromRoute(route);
-  if (routeName?.includes('CameraScreen')) {
-    return 'none';
-  }
-  return 'flex';
 };

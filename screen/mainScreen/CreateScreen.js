@@ -19,7 +19,11 @@ export const CreateScreen = () => {
         name="Створити публікацію"
         component={DeffultCameraScreen}
       />
-      <NestedScreen.Screen name="CameraScreen" component={CameraScreen} />
+      <NestedScreen.Screen
+        name="CameraScreen"
+        component={CameraScreen}
+        // options={{ headerShown: false }} // Скрыть Header
+      />
     </NestedScreen.Navigator>
   );
 };

@@ -35,12 +35,13 @@ export const authSignUpUser =
   };
 
 export const authSignInUser =
-  ({ email, password }) =>
+  ({ email, password }, setLoading) =>
   async (dispatch, getSatte) => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
       const user = await auth.currentUser;
     } catch (error) {
+      setLoading(false);
       notification(error.message.toString(), 'warning');
     }
   };

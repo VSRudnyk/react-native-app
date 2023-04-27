@@ -61,7 +61,7 @@ export const ProfileScreen = () => {
             keyExtractor={(item, index) => index.toString()}
             renderItem={({ item }) => (
               <View style={styles.imageWrapper}>
-                <Image source={{ uri: item.photo }} style={styles.image} />
+                <Image source={{ uri: item.photoURL }} style={styles.image} />
               </View>
             )}
           />

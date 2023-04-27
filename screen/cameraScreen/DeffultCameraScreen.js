@@ -42,13 +42,14 @@ export const DeffultCameraScreen = ({ route, navigation }) => {
       }
       let location = await Location.getCurrentPositionAsync({});
       let address = await Location.reverseGeocodeAsync(location.coords);
+      const { country, city, subregion } = address[0];
 
       await setLocation({
         latitude: location.coords.latitude,
         longitude: location.coords.longitude,
-        country: address[0].country,
-        city: address[0].city,
-        subregion: address[0].subregion,
+        country: country,
+        city: city,
+        subregion: subregion,
       });
 
       const cameraStatus = await Camera.requestCameraPermissionsAsync();
@@ -64,9 +65,11 @@ export const DeffultCameraScreen = ({ route, navigation }) => {
   };
 
   const uploadPostToServer = async () => {
-    const photo = await uploadPhotoToServer();
+    const uniquePostId = Date.now();
+    const photoURL = await uploadPhotoToServer(uniquePostId);
+
     await addDoc(collection(db, 'posts'), {
-      photo,
+      photoURL,
       comment,
       location,
       userId,
@@ -74,11 +77,10 @@ export const DeffultCameraScreen = ({ route, navigation }) => {
     });
   };
 
-  const uploadPhotoToServer = async () => {
+  const uploadPhotoToServer = async (uniquePostId) => {
     try {
       const response = await fetch(photo);
       const file = await response.blob();
-      const uniquePostId = Date.now().toString();
       const storageRef = await ref(storage, `images/${uniquePostId}`);
       await uploadBytes(storageRef, file);
       const processedPhoto = await getDownloadURL(storageRef);

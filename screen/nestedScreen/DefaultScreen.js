@@ -45,7 +45,6 @@ export const DefaultScreenPosts = ({ navigation }) => {
 
   const countComments = (postId) => {
     const number = allComments.filter((comment) => comment.postId === postId);
-
     return number.length;
   };
 
@@ -57,7 +56,7 @@ export const DefaultScreenPosts = ({ navigation }) => {
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => (
             <View style={styles.imageWrapper}>
-              <Image source={{ uri: item.photo }} style={styles.image} />
+              <Image source={{ uri: item.photoURL }} style={styles.image} />
               <View>
                 <Text style={styles.commentsText}>{item.comment}</Text>
               </View>
@@ -68,7 +67,7 @@ export const DefaultScreenPosts = ({ navigation }) => {
                   onPress={() =>
                     navigation.navigate('Коментарі', {
                       postId: item.id,
-                      photo: item.photo,
+                      photo: item.photoURL,
                     })
                   }
                 >
