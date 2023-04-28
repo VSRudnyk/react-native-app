@@ -29,13 +29,10 @@ export const CameraScreen = ({ navigation }) => {
     }
     getCameraStatus();
     ScreenOrientation.addOrientationChangeListener(getCurrentOrientation);
-  }, []);
-
-  useEffect(() => {
     return () => {
-      ScreenOrientation.removeOrientationChangeListener(getCurrentOrientation);
+      ScreenOrientation.removeOrientationChangeListeners();
     };
-  });
+  }, []);
 
   const getCurrentOrientation = async () => {
     const initOrientation = await ScreenOrientation.getOrientationAsync();
@@ -53,20 +50,19 @@ export const CameraScreen = ({ navigation }) => {
         const parts = ratio.split(':');
         const realRatio = parseInt(parts[0]) / parseInt(parts[1]);
         realRatios[ratio] = realRatio;
-        const distance = screenRatio - realRatio;
+        const distance = realRatio - screenRatio;
         distances[ratio] = realRatio;
         if (minDistance == null) {
           minDistance = ratio;
         } else {
-          if (distance >= 0 && distance < distances[minDistance]) {
+          if (distance < distances[minDistance]) {
             minDistance = ratio;
           }
         }
       }
       desiredRatio = minDistance;
-      const remainder = Math.floor(
-        (height - realRatios[desiredRatio] * width) / 2
-      );
+      const remainder = Math.floor((height - screenRatio * width) / 2);
+
       setImagePadding(remainder);
       setRatio(desiredRatio);
       setIsRatioSet(true);
@@ -77,10 +73,6 @@ export const CameraScreen = ({ navigation }) => {
     if (!isRatioSet) {
       await prepareRatio();
     }
-  };
-
-  const getCurrentOrientationAsync = async () => {
-    return await ScreenOrientation.getOrientationAsync();
   };
 
   const takePhoto = async () => {
@@ -102,10 +94,10 @@ export const CameraScreen = ({ navigation }) => {
           style={[
             styles.cameraPreview,
             {
-              marginTop: orientation === 1 ? 100 : 0,
-              marginBottom: orientation === 1 ? 100 : 0,
-              marginLeft: orientation === 4 ? 50 : 0,
-              marginRight: orientation === 4 ? 70 : 0,
+              marginTop: orientation === 1 ? imagePadding : 0,
+              marginBottom: orientation === 1 ? imagePadding : 0,
+              marginLeft: orientation === 4 ? imagePadding : 0,
+              marginRight: orientation === 4 ? imagePadding : 0,
               justifyContent: orientation === 1 ? 'flex-end' : 'center',
               alignItems: orientation === 1 ? 'center' : 'flex-end',
             },
