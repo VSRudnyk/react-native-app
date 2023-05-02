@@ -26,6 +26,7 @@ export const CommentsScreen = ({ route, navigation }) => {
 
   const createPost = async () => {
     const date = currentDate();
+    const commentId = Date.now();
     const docId = doc(db, 'posts', `${postId}`);
     const commentCollection = collection(docId, 'comment');
 
@@ -35,6 +36,7 @@ export const CommentsScreen = ({ route, navigation }) => {
       userImage,
       userId,
       postId,
+      commentId,
       date,
     });
     setComment('');
@@ -50,11 +52,15 @@ export const CommentsScreen = ({ route, navigation }) => {
     });
   };
 
+  const sortComment = allComments
+    .sort((x, y) => x.commentId - y.commentId)
+    .reverse();
+
   return (
     <View style={styles.container}>
       <Image source={{ uri: photo }} style={styles.image} />
       <FlatList
-        data={allComments}
+        data={sortComment}
         renderItem={({ item }) => (
           <View
             style={{

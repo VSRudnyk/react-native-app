@@ -19,6 +19,7 @@ export const Post = ({ navigation, posts }) => {
     fetchAllComments();
   }, [isFocused]);
 
+  const sortPosts = posts.sort((x, y) => x.date - y.date).reverse();
   const fetchAllComments = async () => {
     const comments = query(collectionGroup(db, 'comment'));
     const querySnapshot = await getDocs(comments);
@@ -34,7 +35,7 @@ export const Post = ({ navigation, posts }) => {
     <>
       {isFocused && (
         <FlatList
-          data={posts}
+          data={sortPosts}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => (
             <View style={styles.imageWrapper}>

@@ -69,6 +69,7 @@ export const DeffultCameraScreen = ({ route, navigation }) => {
       location,
       userId,
       login,
+      date: uniquePostId,
     });
   };
 
