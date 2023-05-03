@@ -3,14 +3,17 @@ import {
   View,
   StyleSheet,
   FlatList,
-  Image,
   Text,
   TouchableOpacity,
+  Dimensions,
 } from 'react-native';
 import { getDocs, collectionGroup, query } from 'firebase/firestore';
 import { EvilIcons } from '@expo/vector-icons';
 import { useIsFocused } from '@react-navigation/native';
+import ImageModal from 'react-native-image-modal';
 import { db } from '../firebase/config';
+
+const { height, width } = Dimensions.get('window');
 
 export const Post = ({ navigation, posts }) => {
   const isFocused = useIsFocused();
@@ -19,7 +22,6 @@ export const Post = ({ navigation, posts }) => {
     fetchAllComments();
   }, [isFocused]);
 
-  const sortPosts = posts.sort((x, y) => x.date - y.date).reverse();
   const fetchAllComments = async () => {
     const comments = query(collectionGroup(db, 'comment'));
     const querySnapshot = await getDocs(comments);
@@ -35,11 +37,19 @@ export const Post = ({ navigation, posts }) => {
     <>
       {isFocused && (
         <FlatList
-          data={sortPosts}
+          data={posts}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => (
             <View style={styles.imageWrapper}>
-              <Image source={{ uri: item.photoURL }} style={styles.image} />
+              <ImageModal
+                resizeMode="center"
+                imageBackgroundColor="#fff"
+                style={styles.image}
+                source={{
+                  uri: item.photoURL,
+                }}
+              />
+
               <View>
                 <Text style={styles.commentsText}>{item.comment}</Text>
               </View>
@@ -102,8 +112,8 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
   },
   image: {
-    minWidth: 100,
     height: 240,
+    width: width - 32,
     borderRadius: 8,
   },
   commentsText: {

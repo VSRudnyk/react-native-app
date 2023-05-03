@@ -5,10 +5,9 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  FlatList,
   ImageBackground,
 } from 'react-native';
-import { useIsFocused } from '@react-navigation/native';
+
 import { useDispatch, useSelector } from 'react-redux';
 import { collection, query, where, onSnapshot } from 'firebase/firestore';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -20,7 +19,6 @@ export const ProfileScreen = ({ navigation }) => {
   const dispatch = useDispatch();
   const [userPosts, setUserPosts] = useState([]);
   const { userId, userImage, login } = useSelector((state) => state.auth);
-  const isFocused = useIsFocused();
 
   useEffect(() => {
     getUserPost();

@@ -13,7 +13,6 @@ export const DefaultScreenPosts = ({ navigation }) => {
   }, [isFocused]);
 
   const [posts, setPosts] = useState([]);
-  const [sortPosts, setSortPosts] = useState([]);
 
   const getAllPosts = async () => {
     const colRef = collection(db, 'posts');
@@ -21,16 +20,15 @@ export const DefaultScreenPosts = ({ navigation }) => {
     await onSnapshot(colRef, (snapshot) => {
       setPosts(snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
     });
-    // sortPost();
   };
 
-  // const sortPost = () => {
-  //   setSortPosts(posts.sort((x, y) => x.date - y.date).reverse());
-  // };
+  const sortPosts = posts.sort((x, y) => x.date - y.date).reverse();
+
+  console.log(sortPosts);
 
   return (
     <View style={styles.container}>
-      <Post posts={posts} navigation={navigation} />
+      <Post posts={sortPosts} navigation={navigation} />
     </View>
   );
 };

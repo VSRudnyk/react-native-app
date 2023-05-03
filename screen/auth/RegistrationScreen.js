@@ -13,11 +13,12 @@ import {
   Image,
 } from 'react-native';
 import { useDispatch } from 'react-redux';
-import * as ImagePicker from 'expo-image-picker';
+
 import { uploadBytes, ref, getDownloadURL } from 'firebase/storage';
 import { storage } from '../../firebase/config';
 import { authSignUpUser } from '../../redux/auth/authOperations';
 import { Loader } from '../../components/Loader';
+import { pickImage } from '../../function/pickImage';
 
 const initialState = {
   login: '',
@@ -71,16 +72,10 @@ export default function RegistrationScreen({ navigation }) {
     return processedPhoto;
   };
 
-  const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [4, 4],
-      quality: 0.5,
-    });
-
-    if (!result.cancelled) {
-      setUserImage(result.uri);
+  const choseUserImage = async () => {
+    const userPhoto = pickImage();
+    if (userPhoto) {
+      setUserImage(userPhoto);
     } else {
       setUserImage(userImage);
     }
@@ -101,7 +96,7 @@ export default function RegistrationScreen({ navigation }) {
               }}
             >
               <View style={styles.photoContainer}>
-                <TouchableOpacity activeOpacity={0.8} onPress={pickImage}>
+                <TouchableOpacity activeOpacity={0.8} onPress={choseUserImage}>
                   <Image
                     source={{ uri: userImage }}
                     style={{ width: 120, height: 120, borderRadius: 16 }}
