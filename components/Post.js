@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import {
   getDocs,
+  getDoc,
   collectionGroup,
   query,
   collection,
@@ -62,7 +63,9 @@ export const Post = ({ navigation, posts }) => {
     );
 
     if (likeFromUser) {
-      console.log('User already like this image');
+      const likeId = likeFromUser.id;
+
+      await deleteDoc(doc(db, `/posts/${postId}/like/${likeId}`));
     } else {
       await addDoc(likeCollection, {
         userId,
