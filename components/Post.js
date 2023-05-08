@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import {
   View,
   StyleSheet,
@@ -7,19 +8,31 @@ import {
   TouchableOpacity,
   Dimensions,
 } from 'react-native';
-import { getDocs, collectionGroup, query } from 'firebase/firestore';
+import {
+  getDocs,
+  collectionGroup,
+  query,
+  collection,
+  onSnapshot,
+  addDoc,
+  doc,
+  deleteDoc,
+} from 'firebase/firestore';
 import { EvilIcons } from '@expo/vector-icons';
 import { useIsFocused } from '@react-navigation/native';
 import ImageModal from 'react-native-image-modal';
 import { db } from '../firebase/config';
 
-const { height, width } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 export const Post = ({ navigation, posts }) => {
   const isFocused = useIsFocused();
+  const { userId } = useSelector((state) => state.auth);
   const [allComments, setAllComments] = useState([]);
+  const [allLike, setAllLike] = useState([]);
   useEffect(() => {
     fetchAllComments();
+    fetchAllLikes();
   }, [isFocused]);
 
   const fetchAllComments = async () => {
@@ -30,6 +43,36 @@ export const Post = ({ navigation, posts }) => {
 
   const countComments = (postId) => {
     const number = allComments.filter((comment) => comment.postId === postId);
+    return number.length;
+  };
+
+  const fetchAllLikes = async () => {
+    const likes = query(collectionGroup(db, 'like'));
+    await onSnapshot(likes, (snapshot) => {
+      setAllLike(snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+    });
+  };
+
+  const createLike = async (postId) => {
+    const docId = doc(db, 'posts', `${postId}`);
+    const likeCollection = collection(docId, 'like');
+
+    const likeFromUser = allLike.find(
+      (item) => item.postId === postId && item.userId === userId
+    );
+
+    if (likeFromUser) {
+      console.log('User already like this image');
+    } else {
+      await addDoc(likeCollection, {
+        userId,
+        postId,
+      });
+    }
+  };
+
+  const countlikes = (postId) => {
+    const number = allLike.filter((like) => like.postId === postId);
     return number.length;
   };
 
@@ -54,33 +97,60 @@ export const Post = ({ navigation, posts }) => {
                 <Text style={styles.commentsText}>{item.comment}</Text>
               </View>
               <View style={styles.btnContainer}>
-                <TouchableOpacity
-                  activeOpacity={0.8}
-                  style={styles.commentsBtn}
-                  onPress={() =>
-                    navigation.navigate('Коментарі', {
-                      postId: item.id,
-                      photo: item.photoURL,
-                    })
-                  }
-                >
-                  <View style={styles.commentContainer}>
-                    <EvilIcons
-                      name="comment"
-                      size={24}
-                      color={countComments(item.id) > 0 ? '#FF6C00' : '#BDBDBD'}
-                    />
-                    <Text
-                      style={{
-                        ...styles.commentText,
-                        color:
-                          countComments(item.id) > 0 ? '#212121' : '#BDBDBD',
-                      }}
-                    >
-                      {countComments(item.id)}
-                    </Text>
-                  </View>
-                </TouchableOpacity>
+                <View style={styles.commentAndLikeContainer}>
+                  <TouchableOpacity
+                    activeOpacity={0.8}
+                    style={styles.commentsBtn}
+                    onPress={() =>
+                      navigation.navigate('Коментарі', {
+                        postId: item.id,
+                        photo: item.photoURL,
+                      })
+                    }
+                  >
+                    <View style={styles.commentContainer}>
+                      <EvilIcons
+                        name="comment"
+                        size={24}
+                        color={
+                          countComments(item.id) > 0 ? '#FF6C00' : '#BDBDBD'
+                        }
+                      />
+                      <Text
+                        style={{
+                          ...styles.commentText,
+                          color:
+                            countComments(item.id) > 0 ? '#212121' : '#BDBDBD',
+                        }}
+                      >
+                        {countComments(item.id)}
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    activeOpacity={0.8}
+                    style={styles.commentsBtn}
+                    onPress={() => createLike(item.id)}
+                  >
+                    <View style={styles.commentContainer}>
+                      <EvilIcons
+                        name="like"
+                        size={24}
+                        color={countlikes(item.id) > 0 ? '#FF6C00' : '#BDBDBD'}
+                      />
+                      <Text
+                        style={{
+                          ...styles.commentText,
+                          color:
+                            countlikes(item.id) > 0 ? '#212121' : '#BDBDBD',
+                        }}
+                      >
+                        {countlikes(item.id)}
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                </View>
                 <TouchableOpacity
                   activeOpacity={0.8}
                   style={styles.mapBtn}
@@ -141,11 +211,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginTop: 11,
+    marginRight: 24,
   },
+
   commentText: {
     color: '#BDBDBD',
     fontFamily: 'Roboto-Regular',
     fontSize: 16,
     marginLeft: 6,
+  },
+  commentAndLikeContainer: {
+    flexDirection: 'row',
   },
 });

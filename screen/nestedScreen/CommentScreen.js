@@ -24,7 +24,7 @@ export const CommentsScreen = ({ route, navigation }) => {
     getCommentById();
   }, []);
 
-  const createPost = async () => {
+  const createComment = async () => {
     const date = currentDate();
     const commentId = Date.now();
     const docId = doc(db, 'posts', `${postId}`);
@@ -93,7 +93,7 @@ export const CommentsScreen = ({ route, navigation }) => {
           onChangeText={(value) => setComment(value)}
         />
         <TouchableOpacity
-          onPress={createPost}
+          onPress={createComment}
           style={styles.sendBtn}
           disabled={!comment}
         >

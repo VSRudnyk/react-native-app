@@ -24,8 +24,6 @@ export const DefaultScreenPosts = ({ navigation }) => {
 
   const sortPosts = posts.sort((x, y) => x.date - y.date).reverse();
 
-  console.log(sortPosts);
-
   return (
     <View style={styles.container}>
       <Post posts={sortPosts} navigation={navigation} />
