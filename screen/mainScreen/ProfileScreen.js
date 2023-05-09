@@ -18,10 +18,15 @@ import { Post } from '../../components/Post';
 export const ProfileScreen = ({ navigation }) => {
   const dispatch = useDispatch();
   const [userPosts, setUserPosts] = useState([]);
+  const [isDeleteIconVisible, setIsDeleteIconVisible] = useState(false);
   const { userId, userImage, login } = useSelector((state) => state.auth);
 
   useEffect(() => {
     getUserPost();
+    setIsDeleteIconVisible(true);
+    return () => {
+      setIsDeleteIconVisible(false);
+    };
   }, []);
 
   const getUserPost = async () => {
@@ -54,7 +59,11 @@ export const ProfileScreen = ({ navigation }) => {
           <Image source={{ uri: userImage }} style={styles.userImage} />
         </View>
         <Text style={styles.userName}>{login}</Text>
-        <Post posts={userPosts} navigation={navigation} />
+        <Post
+          posts={userPosts}
+          navigation={navigation}
+          deleteIcon={isDeleteIconVisible}
+        />
       </View>
     </ImageBackground>
   );

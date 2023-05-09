@@ -10,7 +10,6 @@ import {
 } from 'react-native';
 import {
   getDocs,
-  getDoc,
   collectionGroup,
   query,
   collection,
@@ -19,14 +18,16 @@ import {
   doc,
   deleteDoc,
 } from 'firebase/firestore';
-import { EvilIcons } from '@expo/vector-icons';
+import { ref, deleteObject } from 'firebase/storage';
+import { EvilIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useIsFocused } from '@react-navigation/native';
 import ImageModal from 'react-native-image-modal';
-import { db } from '../firebase/config';
+import { db, storage } from '../firebase/config';
+import { notification } from '../function/appNotification';
 
 const { width } = Dimensions.get('window');
 
-export const Post = ({ navigation, posts }) => {
+export const Post = ({ navigation, posts, deleteIcon }) => {
   const isFocused = useIsFocused();
   const { userId } = useSelector((state) => state.auth);
   const [allComments, setAllComments] = useState([]);
@@ -79,17 +80,32 @@ export const Post = ({ navigation, posts }) => {
     return number.length;
   };
 
+  const deletePost = async (post) => {
+    const { date, id } = post;
+
+    await deleteDoc(doc(db, 'posts', `${id}`));
+
+    const photoRef = ref(storage, `images/${date}`);
+    deleteObject(photoRef)
+      .then(() => {
+        notification('Post deleted successfully', 'success');
+      })
+      .catch((error) => {
+        notification(error.message.toString(), 'warning');
+      });
+  };
+
   return (
     <>
       {isFocused && (
         <FlatList
           data={posts}
-          keyExtractor={(item, index) => index.toString()}
+          keyExtractor={(item, index) => item.id}
           renderItem={({ item }) => (
             <View style={styles.imageWrapper}>
               <ImageModal
-                resizeMode="center"
-                imageBackgroundColor="#fff"
+                resizeMode="cover"
+                modalImageStyle={{ resizeMode: 'contain' }}
                 style={styles.image}
                 source={{
                   uri: item.photoURL,
@@ -169,6 +185,18 @@ export const Post = ({ navigation, posts }) => {
                   </View>
                 </TouchableOpacity>
               </View>
+              {deleteIcon && (
+                <TouchableOpacity
+                  style={styles.deleteBtn}
+                  onPress={() => deletePost(item)}
+                >
+                  <MaterialCommunityIcons
+                    name="delete-circle-outline"
+                    size={32}
+                    color="#FF6C00"
+                  />
+                </TouchableOpacity>
+              )}
             </View>
           )}
         />
@@ -216,7 +244,13 @@ const styles = StyleSheet.create({
     marginTop: 11,
     marginRight: 24,
   },
+  deleteBtn: {
+    padding: 4,
 
+    position: 'absolute',
+    right: 8,
+    top: 8,
+  },
   commentText: {
     color: '#BDBDBD',
     fontFamily: 'Roboto-Regular',

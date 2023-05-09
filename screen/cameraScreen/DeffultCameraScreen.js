@@ -11,7 +11,7 @@ import { useSelector } from 'react-redux';
 import * as Location from 'expo-location';
 import { uploadBytes, ref, getDownloadURL } from 'firebase/storage';
 import { collection, addDoc } from 'firebase/firestore';
-import { FontAwesome } from '@expo/vector-icons';
+import { FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useIsFocused } from '@react-navigation/native';
 import { storage } from '../../firebase/config';
 import { db } from '../../firebase/config';
@@ -92,6 +92,7 @@ export const DeffultCameraScreen = ({ route, navigation }) => {
         {!photo ? (
           <View style={styles.takePhotoContainer}>
             <TouchableOpacity
+              activeOpacity={0.8}
               onPress={() => navigation.navigate('CameraScreen')}
               style={styles.takePhotoBtn}
             >
@@ -101,6 +102,17 @@ export const DeffultCameraScreen = ({ route, navigation }) => {
         ) : (
           <View style={styles.takePhotoContainer}>
             <Image source={{ uri: photo }} style={styles.photo} />
+            <TouchableOpacity
+              activeOpacity={0.8}
+              style={styles.retakePhotoBtn}
+              onPress={() => setPhoto(null)}
+            >
+              <MaterialCommunityIcons
+                name="camera-retake"
+                size={32}
+                color="#FF6C00"
+              />
+            </TouchableOpacity>
           </View>
         )}
         <View style={styles.inputContainer}>
@@ -117,6 +129,7 @@ export const DeffultCameraScreen = ({ route, navigation }) => {
         </View>
 
         <TouchableOpacity
+          activeOpacity={0.8}
           onPress={sendPhoto}
           style={{
             ...styles.sendBtn,
@@ -180,6 +193,11 @@ const styles = StyleSheet.create({
   photo: {
     height: '100%',
     width: '100%',
+  },
+  retakePhotoBtn: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
   },
   input: {
     height: 50,
