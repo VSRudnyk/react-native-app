@@ -37,7 +37,10 @@ export default function LoginScreen({ navigation }) {
 
       setdimensions(width);
     };
-    Dimensions.addEventListener('change', onChange);
+    const windowDimensions = Dimensions.addEventListener('change', onChange);
+    return () => {
+      windowDimensions?.remove();
+    };
   }, []);
 
   const keyboardHide = () => {
@@ -63,7 +66,6 @@ export default function LoginScreen({ navigation }) {
             <View
               style={{
                 ...styles.background,
-                marginBottom: isShowKeyboard ? 100 : 0,
               }}
             >
               <Text style={styles.registerTitle}>Войти</Text>
@@ -73,6 +75,9 @@ export default function LoginScreen({ navigation }) {
                   placeholder={'Адрес электронной почты'}
                   placeholderTextColor={'#BDBDBD'}
                   value={state.email}
+                  cursorColor="#FF6C00"
+                  keyboardType="email-address"
+                  onFocus={() => setIsShowKeyboard(true)}
                   onChangeText={(value) =>
                     setState((prevState) => ({ ...prevState, email: value }))
                   }
@@ -83,6 +88,8 @@ export default function LoginScreen({ navigation }) {
                   secureTextEntry={true}
                   placeholderTextColor={'#BDBDBD'}
                   value={state.password}
+                  cursorColor="#FF6C00"
+                  onFocus={() => setIsShowKeyboard(true)}
                   onChangeText={(value) =>
                     setState((prevState) => ({ ...prevState, password: value }))
                   }
@@ -95,7 +102,10 @@ export default function LoginScreen({ navigation }) {
                   <Text style={styles.loginBtnText}>Войти</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  style={styles.registerBtn}
+                  style={{
+                    ...styles.registerBtn,
+                    marginBottom: isShowKeyboard ? 16 : 80,
+                  }}
                   onPress={() => navigation.navigate('Register')}
                 >
                   <Text style={styles.registerBtnText}>
@@ -157,7 +167,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 16,
-    marginBottom: 80,
   },
   loginBtnText: {
     fontSize: 16,

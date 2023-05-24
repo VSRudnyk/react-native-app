@@ -36,17 +36,18 @@ export default function RegistrationScreen({ navigation }) {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [state, setState] = useState(initialState);
   const [loading, setLoading] = useState(false);
-  const [dimensions, setdimensions] = useState(
-    Dimensions.get('window').width - 20 * 2
-  );
+  const [dimensions, setDimensions] = useState();
   const [userImage, setUserImage] = useState(defaultUserPhoto);
 
   useEffect(() => {
     const onChange = () => {
       const width = Dimensions.get('window').width - 20 * 2;
-      setdimensions(width);
+      setDimensions(width);
     };
-    Dimensions.addEventListener('change', onChange);
+    const windowDimensions = Dimensions.addEventListener('change', onChange);
+    return () => {
+      windowDimensions?.remove();
+    };
   }, []);
 
   const keyboardHide = () => {
@@ -92,7 +93,7 @@ export default function RegistrationScreen({ navigation }) {
             <View
               style={{
                 ...styles.background,
-                marginBottom: isShowKeyboard ? 100 : 0,
+                width: dimensions,
               }}
             >
               <View style={styles.photoContainer}>
@@ -110,6 +111,8 @@ export default function RegistrationScreen({ navigation }) {
                   placeholder={'Логин'}
                   placeholderTextColor={'#BDBDBD'}
                   value={state.login}
+                  cursorColor="#FF6C00"
+                  onFocus={() => setIsShowKeyboard(true)}
                   onChangeText={(value) =>
                     setState((prevState) => ({ ...prevState, login: value }))
                   }
@@ -119,6 +122,9 @@ export default function RegistrationScreen({ navigation }) {
                   placeholder={'Адрес электронной почты'}
                   placeholderTextColor={'#BDBDBD'}
                   value={state.email}
+                  keyboardType="email-address"
+                  cursorColor="#FF6C00"
+                  onFocus={() => setIsShowKeyboard(true)}
                   onChangeText={(value) =>
                     setState((prevState) => ({ ...prevState, email: value }))
                   }
@@ -129,6 +135,8 @@ export default function RegistrationScreen({ navigation }) {
                   secureTextEntry={true}
                   placeholderTextColor={'#BDBDBD'}
                   value={state.password}
+                  cursorColor="#FF6C00"
+                  onFocus={() => setIsShowKeyboard(true)}
                   onChangeText={(value) =>
                     setState((prevState) => ({ ...prevState, password: value }))
                   }
@@ -141,7 +149,10 @@ export default function RegistrationScreen({ navigation }) {
                   <Text style={styles.registerBtnText}>Зарегистрироваться</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  style={styles.loginBtn}
+                  style={{
+                    ...styles.loginBtn,
+                    marginBottom: isShowKeyboard ? 16 : 80,
+                  }}
                   onPress={() => navigation.navigate('Login')}
                 >
                   <Text style={styles.loginBtnText}>
@@ -214,7 +225,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 16,
-    marginBottom: 80,
   },
   registerBtnText: {
     fontSize: 16,

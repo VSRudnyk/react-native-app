@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Image,
   TextInput,
+  Keyboard,
 } from 'react-native';
 import { useSelector } from 'react-redux';
 import * as Location from 'expo-location';
@@ -53,6 +54,7 @@ export const DeffultCameraScreen = ({ route, navigation }) => {
   }, [isFocused]);
 
   const sendPhoto = () => {
+    Keyboard.dismiss();
     navigation.navigate('Публікації');
     uploadPostToServer();
     setPhoto(null);
@@ -121,6 +123,7 @@ export const DeffultCameraScreen = ({ route, navigation }) => {
             value={comment}
             onChangeText={(value) => setComment(value)}
             placeholder="Назва..."
+            cursorColor="#FF6C00"
             placeholderTextColor={'#BDBDBD'}
           />
           <Text style={styles.input}>

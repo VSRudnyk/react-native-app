@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   FlatList,
   Image,
+  Keyboard,
 } from 'react-native';
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
@@ -25,6 +26,7 @@ export const CommentsScreen = ({ route, navigation }) => {
   }, []);
 
   const createComment = async () => {
+    Keyboard.dismiss();
     const date = currentDate();
     const commentId = Date.now();
     const docId = doc(db, 'posts', `${postId}`);
@@ -90,6 +92,7 @@ export const CommentsScreen = ({ route, navigation }) => {
           placeholder={'Коментувати...'}
           placeholderTextColor={'#BDBDBD'}
           value={comment}
+          cursorColor="#FF6C00"
           onChangeText={(value) => setComment(value)}
         />
         <TouchableOpacity
@@ -165,6 +168,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#E8E8E8',
     paddingLeft: 16,
     fontSize: 16,
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Roboto-Regular',
   },
 });
