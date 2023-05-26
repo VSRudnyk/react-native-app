@@ -1,16 +1,13 @@
 import { useState, useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { collection, onSnapshot } from 'firebase/firestore';
-import { useIsFocused } from '@react-navigation/native';
 import { db } from '../../firebase/config';
 import { Post } from '../../components/Post';
 
 export const DefaultScreenPosts = ({ navigation }) => {
-  const isFocused = useIsFocused();
-
   useEffect(() => {
     getAllPosts();
-  }, [isFocused]);
+  }, []);
 
   const [posts, setPosts] = useState([]);
 

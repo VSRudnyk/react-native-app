@@ -9,7 +9,6 @@ import {
   Dimensions,
 } from 'react-native';
 import {
-  getDocs,
   collectionGroup,
   query,
   collection,
@@ -20,7 +19,6 @@ import {
 } from 'firebase/firestore';
 import { ref, deleteObject } from 'firebase/storage';
 import { EvilIcons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { useIsFocused } from '@react-navigation/native';
 import ImageModal from 'react-native-image-modal';
 import { db, storage } from '../firebase/config';
 import { notification } from '../function/appNotification';
@@ -28,19 +26,19 @@ import { notification } from '../function/appNotification';
 const { width } = Dimensions.get('window');
 
 export const Post = ({ navigation, posts, deleteIcon }) => {
-  const isFocused = useIsFocused();
   const { userId } = useSelector((state) => state.auth);
   const [allComments, setAllComments] = useState([]);
   const [allLike, setAllLike] = useState([]);
   useEffect(() => {
     fetchAllComments();
     fetchAllLikes();
-  }, [isFocused]);
+  }, []);
 
   const fetchAllComments = async () => {
     const comments = query(collectionGroup(db, 'comment'));
-    const querySnapshot = await getDocs(comments);
-    setAllComments(querySnapshot.docs.map((doc) => ({ ...doc.data() })));
+    await onSnapshot(comments, (snapshot) => {
+      setAllComments(snapshot.docs.map((doc) => ({ ...doc.data() })));
+    });
   };
 
   const countComments = (postId) => {
@@ -97,110 +95,105 @@ export const Post = ({ navigation, posts, deleteIcon }) => {
 
   return (
     <>
-      {isFocused && (
-        <FlatList
-          data={posts}
-          keyExtractor={(item, index) => item.id}
-          renderItem={({ item }) => (
-            <View style={styles.imageWrapper}>
-              <ImageModal
-                resizeMode="cover"
-                modalImageStyle={{ resizeMode: 'contain' }}
-                style={styles.image}
-                source={{
-                  uri: item.photoURL,
-                }}
-              />
+      <FlatList
+        data={posts}
+        keyExtractor={(item, index) => item.id}
+        renderItem={({ item }) => (
+          <View style={styles.imageWrapper}>
+            <ImageModal
+              resizeMode="cover"
+              modalImageStyle={{ resizeMode: 'contain' }}
+              style={styles.image}
+              source={{
+                uri: item.photoURL,
+              }}
+            />
 
-              <View>
-                <Text style={styles.commentsText}>{item.comment}</Text>
-              </View>
-              <View style={styles.btnContainer}>
-                <View style={styles.commentAndLikeContainer}>
-                  <TouchableOpacity
-                    activeOpacity={0.8}
-                    style={styles.commentsBtn}
-                    onPress={() =>
-                      navigation.navigate('Коментарі', {
-                        postId: item.id,
-                        photo: item.photoURL,
-                      })
-                    }
-                  >
-                    <View style={styles.commentContainer}>
-                      <EvilIcons
-                        name="comment"
-                        size={24}
-                        color={
-                          countComments(item.id) > 0 ? '#FF6C00' : '#BDBDBD'
-                        }
-                      />
-                      <Text
-                        style={{
-                          ...styles.commentText,
-                          color:
-                            countComments(item.id) > 0 ? '#212121' : '#BDBDBD',
-                        }}
-                      >
-                        {countComments(item.id)}
-                      </Text>
-                    </View>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    activeOpacity={0.8}
-                    style={styles.commentsBtn}
-                    onPress={() => createLike(item.id)}
-                  >
-                    <View style={styles.commentContainer}>
-                      <EvilIcons
-                        name="like"
-                        size={24}
-                        color={countlikes(item.id) > 0 ? '#FF6C00' : '#BDBDBD'}
-                      />
-                      <Text
-                        style={{
-                          ...styles.commentText,
-                          color:
-                            countlikes(item.id) > 0 ? '#212121' : '#BDBDBD',
-                        }}
-                      >
-                        {countlikes(item.id)}
-                      </Text>
-                    </View>
-                  </TouchableOpacity>
-                </View>
+            <View>
+              <Text style={styles.commentsText}>{item.comment}</Text>
+            </View>
+            <View style={styles.btnContainer}>
+              <View style={styles.commentAndLikeContainer}>
                 <TouchableOpacity
                   activeOpacity={0.8}
-                  style={styles.mapBtn}
+                  style={styles.commentsBtn}
                   onPress={() =>
-                    navigation.navigate('Мапа', { location: item.location })
+                    navigation.navigate('Коментарі', {
+                      postId: item.id,
+                      photo: item.photoURL,
+                    })
                   }
                 >
-                  <View style={styles.locationContainer}>
-                    <EvilIcons name="location" size={24} color="#BDBDBD" />
+                  <View style={styles.commentContainer}>
+                    <EvilIcons
+                      name="comment"
+                      size={24}
+                      color={countComments(item.id) > 0 ? '#FF6C00' : '#BDBDBD'}
+                    />
                     <Text
-                      style={styles.locationText}
-                    >{`${item.location.city}, ${item.location.country}`}</Text>
+                      style={{
+                        ...styles.commentText,
+                        color:
+                          countComments(item.id) > 0 ? '#212121' : '#BDBDBD',
+                      }}
+                    >
+                      {countComments(item.id)}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  activeOpacity={0.8}
+                  style={styles.commentsBtn}
+                  onPress={() => createLike(item.id)}
+                >
+                  <View style={styles.commentContainer}>
+                    <EvilIcons
+                      name="like"
+                      size={24}
+                      color={countlikes(item.id) > 0 ? '#FF6C00' : '#BDBDBD'}
+                    />
+                    <Text
+                      style={{
+                        ...styles.commentText,
+                        color: countlikes(item.id) > 0 ? '#212121' : '#BDBDBD',
+                      }}
+                    >
+                      {countlikes(item.id)}
+                    </Text>
                   </View>
                 </TouchableOpacity>
               </View>
-              {deleteIcon && (
-                <TouchableOpacity
-                  style={styles.deleteBtn}
-                  onPress={() => deletePost(item)}
-                >
-                  <MaterialCommunityIcons
-                    name="delete-circle-outline"
-                    size={32}
-                    color="#FF6C00"
-                  />
-                </TouchableOpacity>
-              )}
+              <TouchableOpacity
+                activeOpacity={0.8}
+                style={styles.mapBtn}
+                onPress={() =>
+                  navigation.navigate('Мапа', { location: item.location })
+                }
+              >
+                <View style={styles.locationContainer}>
+                  <EvilIcons name="location" size={24} color="#BDBDBD" />
+                  <Text
+                    style={styles.locationText}
+                  >{`${item.location.city}, ${item.location.country}`}</Text>
+                </View>
+              </TouchableOpacity>
             </View>
-          )}
-        />
-      )}
+            {deleteIcon && (
+              <TouchableOpacity
+                style={styles.deleteBtn}
+                onPress={() => deletePost(item)}
+              >
+                <MaterialCommunityIcons
+                  name="delete-circle-outline"
+                  size={32}
+                  color="#FF6C00"
+                />
+              </TouchableOpacity>
+            )}
+          </View>
+        )}
+      />
     </>
   );
 };

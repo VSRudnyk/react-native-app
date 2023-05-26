@@ -9,11 +9,9 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   KeyboardAvoidingView,
-  Dimensions,
   Image,
 } from 'react-native';
 import { useDispatch } from 'react-redux';
-
 import { uploadBytes, ref, getDownloadURL } from 'firebase/storage';
 import { storage } from '../../firebase/config';
 import { authSignUpUser } from '../../redux/auth/authOperations';
@@ -36,19 +34,7 @@ export default function RegistrationScreen({ navigation }) {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [state, setState] = useState(initialState);
   const [loading, setLoading] = useState(false);
-  const [dimensions, setDimensions] = useState();
   const [userImage, setUserImage] = useState(defaultUserPhoto);
-
-  useEffect(() => {
-    const onChange = () => {
-      const width = Dimensions.get('window').width - 20 * 2;
-      setDimensions(width);
-    };
-    const windowDimensions = Dimensions.addEventListener('change', onChange);
-    return () => {
-      windowDimensions?.remove();
-    };
-  }, []);
 
   const keyboardHide = () => {
     setIsShowKeyboard(false);
@@ -56,7 +42,7 @@ export default function RegistrationScreen({ navigation }) {
   };
 
   const handleSubmit = async () => {
-    Keyboard.dismiss();
+    keyboardHide();
     setLoading(true);
     const photoURL = await uploadPhotoToServer();
     dispatch(authSignUpUser({ ...state, userImage: photoURL }, setLoading));
@@ -90,12 +76,7 @@ export default function RegistrationScreen({ navigation }) {
           source={require('../../assets/image/bg-image.png')}
         >
           <KeyboardAvoidingView>
-            <View
-              style={{
-                ...styles.background,
-                width: dimensions,
-              }}
-            >
+            <View style={styles.background}>
               <View style={styles.photoContainer}>
                 <TouchableOpacity activeOpacity={0.8} onPress={choseUserImage}>
                   <Image

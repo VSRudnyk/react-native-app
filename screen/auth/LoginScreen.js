@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -9,7 +9,6 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   KeyboardAvoidingView,
-  Dimensions,
   LogBox,
 } from 'react-native';
 import { useDispatch } from 'react-redux';
@@ -27,21 +26,6 @@ export default function LoginScreen({ navigation }) {
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [state, setState] = useState(initialState);
   const [loading, setLoading] = useState(false);
-  const [dimensions, setdimensions] = useState(
-    Dimensions.get('window').width - 20 * 2
-  );
-
-  useEffect(() => {
-    const onChange = () => {
-      const width = Dimensions.get('window').width - 20 * 2;
-
-      setdimensions(width);
-    };
-    const windowDimensions = Dimensions.addEventListener('change', onChange);
-    return () => {
-      windowDimensions?.remove();
-    };
-  }, []);
 
   const keyboardHide = () => {
     setIsShowKeyboard(false);
@@ -49,7 +33,7 @@ export default function LoginScreen({ navigation }) {
   };
 
   const handleSubmit = () => {
-    Keyboard.dismiss();
+    keyboardHide();
     setLoading(true);
     dispatch(authSignInUser(state, setLoading));
     setState(initialState);
