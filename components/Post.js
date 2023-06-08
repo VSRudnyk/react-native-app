@@ -29,6 +29,7 @@ export const Post = ({ navigation, posts, deleteIcon }) => {
   const { userId } = useSelector((state) => state.auth);
   const [allComments, setAllComments] = useState([]);
   const [allLike, setAllLike] = useState([]);
+
   useEffect(() => {
     fetchAllComments();
     fetchAllLikes();
@@ -70,6 +71,29 @@ export const Post = ({ navigation, posts, deleteIcon }) => {
         userId,
         postId,
       });
+    }
+  };
+
+  const colorLike = (postId) => {
+    const ifCommentAndlikeFromUser = allLike.find(
+      (item) => item.postId === postId && item.userId === userId
+    );
+
+    if (ifCommentAndlikeFromUser) {
+      return '#FF6C00';
+    } else {
+      return '#BDBDBD';
+    }
+  };
+  const colorComment = (postId) => {
+    const ifCommentFromUser = allComments.find(
+      (item) => item.postId === postId && item.userId === userId
+    );
+
+    if (ifCommentFromUser) {
+      return '#FF6C00';
+    } else {
+      return '#BDBDBD';
     }
   };
 
@@ -128,13 +152,12 @@ export const Post = ({ navigation, posts, deleteIcon }) => {
                     <EvilIcons
                       name="comment"
                       size={24}
-                      color={countComments(item.id) > 0 ? '#FF6C00' : '#BDBDBD'}
+                      color={colorComment(item.id)}
                     />
                     <Text
                       style={{
                         ...styles.commentText,
-                        color:
-                          countComments(item.id) > 0 ? '#212121' : '#BDBDBD',
+                        color: colorComment(item.id),
                       }}
                     >
                       {countComments(item.id)}
@@ -151,12 +174,12 @@ export const Post = ({ navigation, posts, deleteIcon }) => {
                     <EvilIcons
                       name="like"
                       size={24}
-                      color={countlikes(item.id) > 0 ? '#FF6C00' : '#BDBDBD'}
+                      color={colorLike(item.id)}
                     />
                     <Text
                       style={{
                         ...styles.commentText,
-                        color: countlikes(item.id) > 0 ? '#212121' : '#BDBDBD',
+                        color: colorLike(item.id),
                       }}
                     >
                       {countlikes(item.id)}

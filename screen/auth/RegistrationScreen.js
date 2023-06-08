@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -52,15 +52,16 @@ export default function RegistrationScreen({ navigation }) {
   const uploadPhotoToServer = async () => {
     const response = await fetch(userImage);
     const file = await response.blob();
-    const uniquePostId = Date.now().toString();
-    const storageRef = await ref(storage, `userImage/${uniquePostId}`);
+    const userPhotoId = Date.now().toString();
+    const storageRef = await ref(storage, `userImage/${userPhotoId}`);
     await uploadBytes(storageRef, file);
-    const processedPhoto = await getDownloadURL(storageRef);
-    return processedPhoto;
+    const photoURL = await getDownloadURL(storageRef);
+    return photoURL;
   };
 
   const choseUserImage = async () => {
-    const userPhoto = pickImage();
+    const userPhoto = await pickImage();
+
     if (userPhoto) {
       setUserImage(userPhoto);
     } else {
