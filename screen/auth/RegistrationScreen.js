@@ -17,6 +17,7 @@ import { storage } from '../../firebase/config';
 import { authSignUpUser } from '../../redux/auth/authOperations';
 import { Loader } from '../../components/Loader';
 import { pickImage } from '../../function/pickImage';
+import { notification } from '../../function/appNotification';
 
 const initialState = {
   login: '',
@@ -43,6 +44,10 @@ export default function RegistrationScreen({ navigation }) {
 
   const handleSubmit = async () => {
     keyboardHide();
+    if (userImage === defaultUserPhoto) {
+      notification('Please, add your photo', 'warning');
+      return;
+    }
     setLoading(true);
     const photoURL = await uploadPhotoToServer();
     dispatch(authSignUpUser({ ...state, userImage: photoURL }, setLoading));
