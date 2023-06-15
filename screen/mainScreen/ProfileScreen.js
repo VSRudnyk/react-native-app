@@ -18,14 +18,14 @@ import { Post } from '../../components/Post';
 export const ProfileScreen = ({ navigation }) => {
   const dispatch = useDispatch();
   const [userPosts, setUserPosts] = useState([]);
-  const [isDeleteIconVisible, setIsDeleteIconVisible] = useState(false);
+  const [isProfilScreenActive, setIsProfilScreenActive] = useState(false);
   const { userId, userImage, login } = useSelector((state) => state.auth);
 
   useEffect(() => {
     getUserPost();
-    setIsDeleteIconVisible(true);
+    setIsProfilScreenActive(true);
     return () => {
-      setIsDeleteIconVisible(false);
+      setIsProfilScreenActive(false);
     };
   }, []);
 
@@ -62,7 +62,7 @@ export const ProfileScreen = ({ navigation }) => {
         <Post
           posts={userPosts}
           navigation={navigation}
-          deleteIcon={isDeleteIconVisible}
+          isProfilScreenActive={isProfilScreenActive}
         />
       </View>
     </ImageBackground>

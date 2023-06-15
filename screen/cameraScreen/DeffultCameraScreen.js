@@ -30,7 +30,7 @@ export const DeffultCameraScreen = ({ route, navigation }) => {
     }
   }, [route.params]);
 
-  const { userId, login } = useSelector((state) => state.auth);
+  const { userId, login, userImage } = useSelector((state) => state.auth);
 
   useEffect(() => {
     (async () => {
@@ -70,6 +70,7 @@ export const DeffultCameraScreen = ({ route, navigation }) => {
       comment,
       location,
       userId,
+      userImage,
       login,
       date: uniquePostId,
     });

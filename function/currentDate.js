@@ -1,5 +1,10 @@
-export const currentDate = () => {
-  const date = new Date();
+export const currentDate = (dateInMs) => {
+  let date = new Date();
+
+  if (dateInMs) {
+    date = new Date(dateInMs);
+  }
+
   const year = date.getFullYear();
   const month = date.getMonth() - 1;
   let day = date.getDate();

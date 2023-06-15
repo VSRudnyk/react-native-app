@@ -7,6 +7,7 @@ import {
   Text,
   TouchableOpacity,
   Dimensions,
+  Image,
 } from 'react-native';
 import {
   collectionGroup,
@@ -22,10 +23,11 @@ import { EvilIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import ImageModal from 'react-native-image-modal';
 import { db, storage } from '../firebase/config';
 import { notification } from '../function/appNotification';
+import { currentDate } from '../function/currentDate';
 
 const { width } = Dimensions.get('window');
 
-export const Post = ({ navigation, posts, deleteIcon }) => {
+export const Post = ({ navigation, posts, isProfilScreenActive }) => {
   const { userId } = useSelector((state) => state.auth);
   const [allComments, setAllComments] = useState([]);
   const [allLike, setAllLike] = useState([]);
@@ -124,6 +126,25 @@ export const Post = ({ navigation, posts, deleteIcon }) => {
         keyExtractor={(item, index) => item.id}
         renderItem={({ item }) => (
           <View style={styles.imageWrapper}>
+            <View
+              style={{
+                ...styles.photoHeaderContainer,
+                justifyContent: isProfilScreenActive
+                  ? 'flex-end'
+                  : 'space-between',
+              }}
+            >
+              {!isProfilScreenActive && (
+                <View style={styles.userInfoContainer}>
+                  <Image
+                    source={{ uri: item.userImage }}
+                    style={styles.userImage}
+                  />
+                  <Text style={styles.userLogin}>{item.login}</Text>
+                </View>
+              )}
+              <Text style={styles.userLogin}>{currentDate(item.date)}</Text>
+            </View>
             <ImageModal
               resizeMode="cover"
               modalImageStyle={{ resizeMode: 'contain' }}
@@ -132,7 +153,6 @@ export const Post = ({ navigation, posts, deleteIcon }) => {
                 uri: item.photoURL,
               }}
             />
-
             <View>
               <Text style={styles.commentsText}>{item.comment}</Text>
             </View>
@@ -202,7 +222,7 @@ export const Post = ({ navigation, posts, deleteIcon }) => {
                 </View>
               </TouchableOpacity>
             </View>
-            {deleteIcon && (
+            {isProfilScreenActive && (
               <TouchableOpacity
                 style={styles.deleteBtn}
                 onPress={() => deletePost(item)}
@@ -222,8 +242,27 @@ export const Post = ({ navigation, posts, deleteIcon }) => {
 };
 
 const styles = StyleSheet.create({
+  photoHeaderContainer: {
+    marginBottom: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  userInfoContainer: {
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+  userImage: {
+    width: 25,
+    height: 25,
+    borderRadius: 50,
+  },
+  userLogin: {
+    color: '#212121',
+    fontFamily: 'Roboto-Regular',
+    marginLeft: 8,
+  },
   imageWrapper: {
-    marginTop: 32,
+    marginTop: 16,
     marginBottom: 10,
     justifyContent: 'center',
     marginHorizontal: 16,
