@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, TouchableWithoutFeedback, StyleSheet } from 'react-native';
 import { collection, onSnapshot } from 'firebase/firestore';
 import { db } from '../../firebase/config';
 import { Post } from '../../components/Post';

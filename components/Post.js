@@ -19,7 +19,7 @@ import {
   deleteDoc,
 } from 'firebase/firestore';
 import { ref, deleteObject } from 'firebase/storage';
-import { EvilIcons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { EvilIcons } from '@expo/vector-icons';
 import ImageModal from 'react-native-image-modal';
 import { db, storage } from '../firebase/config';
 import { notification } from '../function/appNotification';
@@ -28,7 +28,7 @@ import { currentDate } from '../function/currentDate';
 const { width } = Dimensions.get('window');
 
 export const Post = ({ navigation, posts, isProfilScreenActive }) => {
-  const { userId } = useSelector((state) => state.auth);
+  const { userId, userImage } = useSelector((state) => state.auth);
   const [allComments, setAllComments] = useState([]);
   const [allLike, setAllLike] = useState([]);
 
@@ -45,8 +45,10 @@ export const Post = ({ navigation, posts, isProfilScreenActive }) => {
   };
 
   const countComments = (postId) => {
-    const number = allComments.filter((comment) => comment.postId === postId);
-    return number.length;
+    const commentsById = allComments.filter(
+      (comment) => comment.postId === postId
+    );
+    return commentsById.length;
   };
 
   const fetchAllLikes = async () => {
@@ -69,9 +71,12 @@ export const Post = ({ navigation, posts, isProfilScreenActive }) => {
 
       await deleteDoc(doc(db, `/posts/${postId}/like/${likeId}`));
     } else {
+      const date = Date.now();
       await addDoc(likeCollection, {
         userId,
         postId,
+        userImage,
+        date,
       });
     }
   };
@@ -100,8 +105,16 @@ export const Post = ({ navigation, posts, isProfilScreenActive }) => {
   };
 
   const countlikes = (postId) => {
-    const number = allLike.filter((like) => like.postId === postId);
-    return number.length;
+    const likeById = allLike.filter((like) => like.postId === postId);
+    return likeById.length;
+  };
+
+  const showAvatarLikes = (postId) => {
+    const likeById = allLike.filter((like) => like.postId === postId);
+    const sortedAvatarArr = likeById.sort((x, y) => x.date - y.date).reverse();
+    const avatarArr = [];
+    sortedAvatarArr.map((avatar) => avatarArr.push(avatar.userImage));
+    return avatarArr;
   };
 
   const deletePost = async (post) => {
@@ -119,94 +132,139 @@ export const Post = ({ navigation, posts, isProfilScreenActive }) => {
       });
   };
 
-  return (
-    <>
-      <FlatList
-        data={posts}
-        keyExtractor={(item, index) => item.id}
-        renderItem={({ item }) => (
-          <View style={styles.imageWrapper}>
-            <View
-              style={{
-                ...styles.photoHeaderContainer,
-                justifyContent: isProfilScreenActive
-                  ? 'flex-end'
-                  : 'space-between',
-              }}
-            >
-              {!isProfilScreenActive && (
-                <View style={styles.userInfoContainer}>
-                  <Image
-                    source={{ uri: item.userImage }}
-                    style={styles.userImage}
-                  />
-                  <Text style={styles.userLogin}>{item.login}</Text>
-                </View>
-              )}
-              <Text style={styles.userLogin}>{currentDate(item.date)}</Text>
-            </View>
-            <ImageModal
-              resizeMode="cover"
-              modalImageStyle={{ resizeMode: 'contain' }}
-              style={styles.image}
-              source={{
-                uri: item.photoURL,
-              }}
-            />
-            <View>
-              <Text style={styles.commentsText}>{item.comment}</Text>
-            </View>
-            <View style={styles.btnContainer}>
-              <View style={styles.commentAndLikeContainer}>
-                <TouchableOpacity
-                  activeOpacity={0.8}
-                  style={styles.commentsBtn}
-                  onPress={() =>
-                    navigation.navigate('Коментарі', {
-                      postId: item.id,
-                      photo: item.photoURL,
-                    })
-                  }
-                >
-                  <View style={styles.commentContainer}>
-                    <EvilIcons
-                      name="comment"
-                      size={24}
-                      color={colorComment(item.id)}
-                    />
-                    <Text
-                      style={{
-                        ...styles.commentText,
-                        color: colorComment(item.id),
-                      }}
-                    >
-                      {countComments(item.id)}
-                    </Text>
-                  </View>
-                </TouchableOpacity>
+  const renderItem = ({ item, index }) => {
+    if (index === 0)
+      return (
+        <Image
+          source={{ uri: item }}
+          style={{ ...styles.userImage, borderWidth: 1, borderColor: '#fff' }}
+        />
+      );
+    else if (index > 0 && index < 3)
+      return (
+        <Image
+          source={{ uri: item }}
+          style={{
+            ...styles.userImage,
+            marginLeft: -5,
+            borderWidth: 1,
+            borderColor: '#fff',
+          }}
+        />
+      );
+    else return;
+  };
 
-                <TouchableOpacity
-                  activeOpacity={0.8}
-                  style={styles.commentsBtn}
-                  onPress={() => createLike(item.id)}
-                >
-                  <View style={styles.commentContainer}>
-                    <EvilIcons
-                      name="like"
-                      size={24}
-                      color={colorLike(item.id)}
-                    />
-                    <Text
-                      style={{
-                        ...styles.commentText,
-                        color: colorLike(item.id),
-                      }}
-                    >
-                      {countlikes(item.id)}
-                    </Text>
-                  </View>
-                </TouchableOpacity>
+  return (
+    <FlatList
+      data={posts}
+      keyExtractor={(item, index) => item.id}
+      renderItem={({ item }) => (
+        <View style={styles.imageWrapper}>
+          <View
+            style={{
+              ...styles.photoHeaderContainer,
+              justifyContent: isProfilScreenActive
+                ? 'flex-end'
+                : 'space-between',
+            }}
+          >
+            {!isProfilScreenActive && (
+              <View style={styles.userInfoContainer}>
+                <Image
+                  source={{ uri: item.userImage }}
+                  style={styles.userImage}
+                />
+                <Text style={styles.userLogin}>{item.login}</Text>
               </View>
+            )}
+            <Text style={styles.userLogin}>{currentDate(item.date)}</Text>
+          </View>
+          <ImageModal
+            resizeMode="cover"
+            modalImageStyle={{ resizeMode: 'contain' }}
+            style={styles.image}
+            source={{
+              uri: item.photoURL,
+            }}
+          />
+          <View>
+            <Text style={styles.commentsText}>{item.comment}</Text>
+          </View>
+          <View style={styles.btnContainer}>
+            <View style={styles.commentAndLikeContainer}>
+              <TouchableOpacity
+                activeOpacity={0.8}
+                style={styles.commentsBtn}
+                onPress={() =>
+                  navigation.navigate('Коментарі', {
+                    postId: item.id,
+                    photo: item.photoURL,
+                  })
+                }
+              >
+                <View style={styles.commentContainer}>
+                  <EvilIcons
+                    name="comment"
+                    size={24}
+                    color={colorComment(item.id)}
+                  />
+                  <Text
+                    style={{
+                      ...styles.commentText,
+                      color: colorComment(item.id),
+                    }}
+                  >
+                    {countComments(item.id)}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                activeOpacity={0.8}
+                style={styles.commentsBtn}
+                onPress={() => createLike(item.id)}
+              >
+                <View style={styles.likeContainer}>
+                  <EvilIcons name="like" size={24} color={colorLike(item.id)} />
+                  <Text
+                    style={{
+                      ...styles.commentText,
+                      color: colorLike(item.id),
+                    }}
+                  >
+                    {countlikes(item.id)}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+              <View
+                style={{
+                  marginLeft: 8,
+                }}
+              >
+                <FlatList
+                  data={showAvatarLikes(item.id)}
+                  horizontal={true}
+                  keyExtractor={(item, index) => index}
+                  renderItem={renderItem}
+                />
+              </View>
+              {countlikes(item.id) >= 3 && (
+                <TouchableOpacity
+                  onPress={() =>
+                    notification(
+                      "Here will be appearing all the user's avatars that like soon.",
+                      'warning'
+                    )
+                  }
+                  activeOpacity={0.8}
+                  style={{ marginLeft: 8 }}
+                >
+                  <EvilIcons name="chevron-right" size={24} color="#BDBDBD" />
+                </TouchableOpacity>
+              )}
+            </View>
+            <View>
               <TouchableOpacity
                 activeOpacity={0.8}
                 style={styles.mapBtn}
@@ -222,22 +280,18 @@ export const Post = ({ navigation, posts, isProfilScreenActive }) => {
                 </View>
               </TouchableOpacity>
             </View>
-            {isProfilScreenActive && (
-              <TouchableOpacity
-                style={styles.deleteBtn}
-                onPress={() => deletePost(item)}
-              >
-                <MaterialCommunityIcons
-                  name="delete-circle-outline"
-                  size={32}
-                  color="#FF6C00"
-                />
-              </TouchableOpacity>
-            )}
           </View>
-        )}
-      />
-    </>
+          {isProfilScreenActive && (
+            <TouchableOpacity
+              style={styles.deleteBtn}
+              onPress={() => deletePost(item)}
+            >
+              <EvilIcons name="close-o" size={32} color="#FF6C00" />
+            </TouchableOpacity>
+          )}
+        </View>
+      )}
+    />
   );
 };
 
@@ -280,12 +334,14 @@ const styles = StyleSheet.create({
   },
   btnContainer: {
     flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'space-between',
+    marginTop: 8,
+    height: 25,
   },
   locationContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 11,
   },
   locationText: {
     color: '#212121',
@@ -295,16 +351,16 @@ const styles = StyleSheet.create({
   },
   commentContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 11,
     marginRight: 24,
+  },
+  likeContainer: {
+    flexDirection: 'row',
   },
   deleteBtn: {
     padding: 4,
-
     position: 'absolute',
-    right: 8,
-    top: 8,
+    right: 0,
+    top: 24,
   },
   commentText: {
     color: '#BDBDBD',
@@ -314,5 +370,6 @@ const styles = StyleSheet.create({
   },
   commentAndLikeContainer: {
     flexDirection: 'row',
+    alignItems: 'center',
   },
 });
